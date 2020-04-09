@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 @LargeTest
 class PostsListingTest {
 
+    
     @get:Rule
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
