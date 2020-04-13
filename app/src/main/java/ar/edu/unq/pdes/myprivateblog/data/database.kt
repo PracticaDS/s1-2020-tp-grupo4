@@ -36,7 +36,7 @@ data class BlogEntry(
     var uid: EntityID = 0,
 
     @ColumnInfo(name = "title")
-    val title: String = "",
+    var title: String = "",
 
     @ColumnInfo(name = "bodyPath")
     val bodyPath: String? = null,
