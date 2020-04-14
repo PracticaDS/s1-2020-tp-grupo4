@@ -1,6 +1,7 @@
 package ar.edu.unq.pdes.myprivateblog
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -23,12 +24,8 @@ class PostsListingTest {
 
     @Test
     fun whenTappingOnNewPostFab_postCreationScreenShouldOpen() {
-
-        onView(withId(R.id.create_new_post))
-            .perform(click())
-
-        onView(withId(R.id.title))
-            .check(matches(withHint(R.string.hint_post_title)))
+        R.id.create_new_post.clickButton()
+        R.id.title.isMatchingWithHint(R.string.hint_post_title)
     }
 
     @Test
@@ -36,22 +33,19 @@ class PostsListingTest {
         val postTitle = "Test title post"
         val bodyText = "Test body text"
 
-        onView(withId(R.id.create_new_post))
-            .perform(click())
+        R.id.create_new_post.clickButton()
+        R.id.title.fillText(postTitle)
+        R.id.body.fillText(bodyText)
 
-        onView(withId(R.id.title)).
-                perform(typeText(postTitle))
+        R.id.btn_save.isDisplayedInView()
+        R.id.btn_save.clickButton()
 
-        onView(withId(R.id.body))
-            .perform(typeText(bodyText))
-
-        onView(withId(R.id.btn_save))
-            .check(matches(isDisplayed()))
-
-        onView(withId(R.id.btn_save))
-            .perform(click())
-
-        onView(withId(R.id.title))
-            .check(matches(withText(postTitle)))
+        R.id.title.isMatchingWithValue(postTitle)
     }
 }
+
+fun Int.isMatchingWithValue(anStringValue : String): ViewInteraction = onView(withId(this)).check(matches(withText(anStringValue)))
+fun Int.clickButton() : ViewInteraction = onView(withId(this)).perform(click())
+fun Int.isDisplayedInView() : ViewInteraction = onView(withId(this)).check(matches(isDisplayed()))
+fun Int.fillText(text : String) : ViewInteraction = onView(withId(this)).perform(typeText(text))
+fun Int.isMatchingWithHint(hintResource : Int): ViewInteraction = onView(withId(this)).check(matches(withHint(hintResource)))
