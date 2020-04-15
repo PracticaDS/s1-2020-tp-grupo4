@@ -6,11 +6,13 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import ar.edu.unq.pdes.myprivateblog.BaseFragment
-import ar.edu.unq.pdes.myprivateblog.BaseViewModel
-import ar.edu.unq.pdes.myprivateblog.ColorUtils
-import ar.edu.unq.pdes.myprivateblog.R
+import ar.edu.unq.pdes.myprivateblog.*
 import kotlinx.android.synthetic.main.fragment_post_edit.*
+import org.wordpress.aztec.Aztec
+import org.wordpress.aztec.ITextFormat
+import org.wordpress.aztec.glideloader.GlideImageLoader
+import org.wordpress.aztec.glideloader.GlideVideoThumbnailLoader
+import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 import timber.log.Timber
 
 class PostCreateFragment : BaseFragment() {
@@ -56,9 +58,8 @@ class PostCreateFragment : BaseFragment() {
             viewModel.titleText.postValue(text.toString())
         }
 
-        body.doOnTextChanged { text, start, count, after ->
-            viewModel.bodyText.value = body.toFormattedHtml()
-            Timber.d(viewModel.bodyText.value)
+        body.doOnTextChanged{ text, _,_,_ ->
+            viewModel.bodyText = text.toString()
         }
 
         btn_save.setOnClickListener {
@@ -73,6 +74,7 @@ class PostCreateFragment : BaseFragment() {
             viewModel.cardColor.postValue(it)
         }
 
+        context?.setAztec(body, source, formatting_toolbar)
     }
 
 }

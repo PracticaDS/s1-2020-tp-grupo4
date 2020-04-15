@@ -1,6 +1,7 @@
 package ar.edu.unq.pdes.myprivateblog.services
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntriesRepository
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
 import ar.edu.unq.pdes.myprivateblog.data.EntityID
@@ -18,6 +19,10 @@ class BlogEntriesService @Inject constructor(
     fun fetch(id: Int) : Flowable<BlogEntry> {
         return blogEntriesRepository
             .fetchById(id)
+    }
+
+    fun getAll(): LiveData<List<BlogEntry>>{
+        return blogEntriesRepository.getAllBlogEntries()
     }
 
     fun create(title : String, bodyText : String, cardColor : Int) : Flowable<Long> {
@@ -42,14 +47,12 @@ class BlogEntriesService @Inject constructor(
 
     fun update(uid: EntityID, titleText: String, bodyPath: String, bodyText: String, cardColor: Int) : Flowable<String> {
         return Flowable.fromCallable {
-            val fileName = bodyPath
-
             val outputStreamWriter =
-                OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE))
+                OutputStreamWriter(context.openFileOutput(bodyPath, Context.MODE_PRIVATE))
 
             outputStreamWriter.use { it.flush(); it.write(bodyText) }
 
-            fileName
+            bodyPath
 
         }.flatMapSingle {
             blogEntriesRepository.updateBlogEntry(

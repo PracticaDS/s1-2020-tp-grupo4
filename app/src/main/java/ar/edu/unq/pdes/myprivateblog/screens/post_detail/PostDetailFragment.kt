@@ -6,13 +6,20 @@ import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ar.edu.unq.pdes.myprivateblog.BaseFragment
 import ar.edu.unq.pdes.myprivateblog.ColorUtils
 import ar.edu.unq.pdes.myprivateblog.R
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
+import ar.edu.unq.pdes.myprivateblog.setAztec
 import kotlinx.android.synthetic.main.fragment_post_detail.*
+import kotlinx.android.synthetic.main.fragment_post_detail.body
+import kotlinx.android.synthetic.main.fragment_post_detail.header_background
+import kotlinx.android.synthetic.main.fragment_post_detail.title
+import kotlinx.android.synthetic.main.fragment_post_edit.*
 import java.io.File
 
 class PostDetailFragment : BaseFragment() {
@@ -21,6 +28,8 @@ class PostDetailFragment : BaseFragment() {
     private val viewModel by viewModels<PostDetailViewModel> { viewModelFactory }
 
     private val args: PostDetailFragmentArgs by navArgs()
+
+    fun goNavActionEditPost(postID: Int) =  findNavController().navigate(PostDetailFragmentDirections.navActionEditPost(postID))
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,11 +43,11 @@ class PostDetailFragment : BaseFragment() {
         })
 
         btn_back.setOnClickListener {
-            findNavController().navigateUp()
+            closeAndGoBack()
         }
 
         btn_edit.setOnClickListener {
-            findNavController().navigate(PostDetailFragmentDirections.navActionEditPost(args.postId))
+            goNavActionEditPost(args.postId)
         }
 
     }

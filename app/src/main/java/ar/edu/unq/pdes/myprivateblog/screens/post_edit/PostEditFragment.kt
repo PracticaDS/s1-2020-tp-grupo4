@@ -1,15 +1,14 @@
 package ar.edu.unq.pdes.myprivateblog.screens.post_edit
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
-import ar.edu.unq.pdes.myprivateblog.BaseFragment
-import ar.edu.unq.pdes.myprivateblog.BaseViewModel
-import ar.edu.unq.pdes.myprivateblog.ColorUtils
-import ar.edu.unq.pdes.myprivateblog.R
+import ar.edu.unq.pdes.myprivateblog.*
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
 import kotlinx.android.synthetic.main.fragment_post_edit.*
 import kotlinx.android.synthetic.main.fragment_post_edit.body
@@ -76,11 +75,13 @@ class PostEditFragment : BaseFragment() {
             viewModel.editPost()
         }
 
+        context?.setAztec(body, source, formatting_toolbar)
     }
 
     fun renderBlogEntry(post: BlogEntry) {
         viewModel.editableTitle.append(post.title)
         viewModel.editableBody.append(post.bodyPath)
+        viewModel.cardColor.value = post.cardColor
         title.text = viewModel.editableTitle
         header_background.setBackgroundColor(post.cardColor)
         applyStatusBarStyle(post.cardColor)

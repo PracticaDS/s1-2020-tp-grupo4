@@ -16,13 +16,13 @@ class PostCreateViewModel @Inject constructor(
 ): BaseViewModel(blogEntriesService, context) {
 
     val titleText = MutableLiveData("")
-    val bodyText = MutableLiveData("")
+    var bodyText = ""
     val cardColor = MutableLiveData(Color.LTGRAY)
 
     var postId = 0
 
     fun createPost() : Disposable {
-        return blogEntriesService.create(titleText.value!!, bodyText.value!!, cardColor.value!!)
+        return blogEntriesService.create(titleText.value!!, bodyText, cardColor.value!!)
             .compose(RxSchedulers.flowableAsync()).subscribe {
                 postId = it.toInt()
                 state.value = State.SUCCESS
