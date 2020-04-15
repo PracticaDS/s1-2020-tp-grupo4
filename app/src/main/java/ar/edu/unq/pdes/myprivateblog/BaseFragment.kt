@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
@@ -36,6 +37,10 @@ abstract class BaseFragment : DaggerFragment() {
         }
 
         window.statusBarColor = backgroundColor
+    }
+
+    protected fun closeAndGoBack() {
+        findNavController().navigateUp()
     }
 
 }

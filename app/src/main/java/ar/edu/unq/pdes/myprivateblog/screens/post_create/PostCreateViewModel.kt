@@ -3,58 +3,30 @@ package ar.edu.unq.pdes.myprivateblog.screens.post_create
 import android.content.Context
 import android.graphics.Color
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import ar.edu.unq.pdes.myprivateblog.data.BlogEntriesRepository
-import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
+import ar.edu.unq.pdes.myprivateblog.BaseViewModel
 import ar.edu.unq.pdes.myprivateblog.rx.RxSchedulers
-import io.reactivex.Flowable
-import java.io.OutputStreamWriter
-import java.util.*
+import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
+import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 
 
 class PostCreateViewModel @Inject constructor(
-    val blogEntriesRepository: BlogEntriesRepository,
-    val context: Context
-) : ViewModel() {
+    blogEntriesService: BlogEntriesService,
+    context: Context
+): BaseViewModel(blogEntriesService, context) {
 
-    enum class State {
-        EDITING, SUCCESS, ERROR
-    }
-
-    val state = MutableLiveData(State.EDITING)
     val titleText = MutableLiveData("")
     val bodyText = MutableLiveData("")
-    val cardColor = MutableLiveData<Int>(Color.LTGRAY)
+    val cardColor = MutableLiveData(Color.LTGRAY)
 
-    var post = 0
+    var postId = 0
 
-    fun createPost() {
-        // TODO: extract this to some BlogEntryService or BlogEntryActions or some other super meaningful name...
-
-        val disposable = Flowable.fromCallable {
-
-            val fileName = UUID.randomUUID().toString() + ".body"
-            val outputStreamWriter =
-                OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE))
-            outputStreamWriter.use { it.write(bodyText.value) }
-            fileName
-
-        }.flatMapSingle {
-
-            blogEntriesRepository.createBlogEntry(
-                BlogEntry(
-                    title = titleText.value.toString(),
-                    bodyPath = it,
-                    cardColor = cardColor.value!!
-                )
-            )
-
-        }.compose(RxSchedulers.flowableAsync()).subscribe {
-            post = it.toInt()
-            state.value = State.SUCCESS
+    fun createPost() : Disposable {
+        return blogEntriesService.create(titleText.value!!, bodyText.value!!, cardColor.value!!)
+            .compose(RxSchedulers.flowableAsync()).subscribe {
+                postId = it.toInt()
+                state.value = State.SUCCESS
         }
-
     }
 
 }

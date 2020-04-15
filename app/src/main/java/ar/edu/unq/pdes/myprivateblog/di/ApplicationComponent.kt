@@ -15,6 +15,7 @@ import ar.edu.unq.pdes.myprivateblog.screens.post_edit.PostEditFragment
 import ar.edu.unq.pdes.myprivateblog.screens.post_edit.PostEditViewModel
 import ar.edu.unq.pdes.myprivateblog.screens.posts_listing.PostsListingFragment
 import ar.edu.unq.pdes.myprivateblog.screens.posts_listing.PostsListingViewModel
+import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
 import dagger.*
 import dagger.android.AndroidInjector
 import dagger.android.ContributesAndroidInjector
@@ -52,6 +53,13 @@ object ApplicationModule {
     @Provides
     fun provideBlogEntriesRepository(appDatabase: AppDatabase): BlogEntriesRepository {
         return BlogEntriesRepository(appDatabase)
+    }
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideBlogEntriesService(blogEntriesRepository: BlogEntriesRepository, context: Context): BlogEntriesService {
+        return BlogEntriesService(blogEntriesRepository, context)
     }
 }
 

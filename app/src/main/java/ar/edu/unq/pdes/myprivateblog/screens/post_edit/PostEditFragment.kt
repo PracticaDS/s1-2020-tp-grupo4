@@ -5,9 +5,9 @@ import android.view.View
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ar.edu.unq.pdes.myprivateblog.BaseFragment
+import ar.edu.unq.pdes.myprivateblog.BaseViewModel
 import ar.edu.unq.pdes.myprivateblog.ColorUtils
 import ar.edu.unq.pdes.myprivateblog.R
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
@@ -36,7 +36,7 @@ class PostEditFragment : BaseFragment() {
 
         viewModel.state.observe(viewLifecycleOwner, Observer {
             when(it){
-                PostEditViewModel.State.SUCCESS -> {
+                BaseViewModel.State.SUCCESS -> {
                      closeAndGoBack()
                 }
             }
@@ -89,9 +89,5 @@ class PostEditFragment : BaseFragment() {
             val content = File(context?.filesDir, post.bodyPath).readText()
             body.setText(content)
         }
-    }
-
-    private fun closeAndGoBack() {
-        findNavController().navigateUp()
     }
 }
