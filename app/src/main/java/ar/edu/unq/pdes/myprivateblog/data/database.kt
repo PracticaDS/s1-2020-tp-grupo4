@@ -57,8 +57,12 @@ data class BlogEntry(
 
 @Dao
 interface BlogEntriesDao {
+
     @Query("SELECT * FROM BlogEntries ORDER BY date DESC")
     fun getAll(): Flowable<List<BlogEntry>>
+
+    @Query("SELECT * FROM BlogEntries WHERE is_deleted = :deleted  ORDER BY date DESC")
+    fun getAll(deleted: Boolean): Flowable<List<BlogEntry>>
 
     @Query("SELECT * FROM BlogEntries WHERE uid = :entryId LIMIT 1")
     fun loadById(entryId: EntityID): Flowable<BlogEntry>

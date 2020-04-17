@@ -22,7 +22,7 @@ class BlogEntriesService @Inject constructor(
     }
 
     fun getAll(): LiveData<List<BlogEntry>>{
-        return blogEntriesRepository.getAllBlogEntries()
+        return blogEntriesRepository.getActivesBlogEntries()
     }
 
     fun create(title : String, bodyText : String, cardColor : Int) : Flowable<Long> {
@@ -45,13 +45,14 @@ class BlogEntriesService @Inject constructor(
         }
     }
 
-    fun update(uid: EntityID, titleText: String, bodyPath: String, bodyText: String, cardColor: Int) : Flowable<String> {
+    fun update(uid: EntityID, titleText: String, bodyPath: String, bodyText: String, cardColor: Int, delete: Boolean = false) : Flowable<String> {
         return Flowable.fromCallable {
-            val outputStreamWriter =
-                OutputStreamWriter(context.openFileOutput(bodyPath, Context.MODE_PRIVATE))
+            if(!delete) {
+                val outputStreamWriter =
+                    OutputStreamWriter(context.openFileOutput(bodyPath, Context.MODE_PRIVATE))
 
-            outputStreamWriter.use { it.flush(); it.write(bodyText) }
-
+                outputStreamWriter.use { it.flush(); it.write(bodyText) }
+            }
             bodyPath
 
         }.flatMapSingle {
@@ -60,12 +61,15 @@ class BlogEntriesService @Inject constructor(
                     uid = uid,
                     title = titleText,
                     bodyPath = it,
-                    cardColor = cardColor
+                    cardColor = cardColor,
+                    deleted = delete
                 )
             ).toSingle {
                 it
             }
         }
     }
+
+    fun logicalDelete(blogEntry: BlogEntry) = update(blogEntry.uid, blogEntry.title, blogEntry.bodyPath!!,"", blogEntry.cardColor!!, true)
 
 }

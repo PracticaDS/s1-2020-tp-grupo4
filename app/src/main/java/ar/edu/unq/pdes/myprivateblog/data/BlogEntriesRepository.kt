@@ -7,6 +7,9 @@ class BlogEntriesRepository(val appDatabase: AppDatabase) {
     fun getAllBlogEntries() =
         LiveDataReactiveStreams.fromPublisher(appDatabase.blogEntriesDao().getAll())
 
+    fun getActivesBlogEntries() =
+        LiveDataReactiveStreams.fromPublisher(appDatabase.blogEntriesDao().getAll(false))
+
     fun fetchLiveById(entryId: EntityID) =
         LiveDataReactiveStreams.fromPublisher(appDatabase.blogEntriesDao().loadById(entryId))
 
