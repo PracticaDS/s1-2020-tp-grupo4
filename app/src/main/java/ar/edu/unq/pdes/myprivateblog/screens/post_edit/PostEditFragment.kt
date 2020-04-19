@@ -35,7 +35,7 @@ class PostEditFragment : BaseFragment() {
 
         viewModel.state.observe(viewLifecycleOwner, Observer {
             when(it){
-                BaseViewModel.State.SUCCESS -> {
+                BaseViewModel.State.POST_EDITED -> {
                      closeAndGoBack()
                 }
             }

@@ -26,7 +26,7 @@ class PostEditViewModel @Inject constructor(
         val postSecure = post.value!!
         return blogEntriesService.update(postSecure.uid, titleText, postSecure.bodyPath!!, bodyText, cardColor.value!!)
             .compose(RxSchedulers.flowableAsync()).subscribe {
-            state.value = State.SUCCESS
+            state.value = State.POST_EDITED
         }
     }
 }

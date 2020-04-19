@@ -18,7 +18,7 @@ abstract class BaseViewModel constructor(
     var post = MutableLiveData<BlogEntry?>()
 
     enum class State {
-        EDITING, SUCCESS, ERROR
+        EDITING, POST_EDITED, ERROR, POST_DELETED, POST_CREATED
     }
 
     fun fetchBlogEntry(id: EntityID) : Disposable {

@@ -8,12 +8,13 @@ import ar.edu.unq.pdes.myprivateblog.data.EntityID
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import java.io.OutputStreamWriter
 import java.util.*
 import javax.inject.Inject
 
 class BlogEntriesService @Inject constructor(
-    val blogEntriesRepository: BlogEntriesRepository,
+    private val blogEntriesRepository: BlogEntriesRepository,
     val context: Context
 ){
     fun fetch(id: Int) : Flowable<BlogEntry> {
@@ -27,13 +28,11 @@ class BlogEntriesService @Inject constructor(
 
     fun create(title : String, bodyText : String, cardColor : Int) : Flowable<Long> {
         return Flowable.fromCallable {
-
             val fileName = UUID.randomUUID().toString() + ".body"
             val outputStreamWriter =
                 OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE))
             outputStreamWriter.use { it.write(bodyText) }
             fileName
-
         }.flatMapSingle {
             blogEntriesRepository.createBlogEntry(
                 BlogEntry(
@@ -45,31 +44,27 @@ class BlogEntriesService @Inject constructor(
         }
     }
 
-    fun update(uid: EntityID, titleText: String, bodyPath: String, bodyText: String, cardColor: Int, delete: Boolean = false) : Flowable<String> {
+    fun update(uid: EntityID, titleText: String, bodyPath: String, bodyText: String, cardColor: Int) : Flowable<String> {
         return Flowable.fromCallable {
-            if(!delete) {
-                val outputStreamWriter =
-                    OutputStreamWriter(context.openFileOutput(bodyPath, Context.MODE_PRIVATE))
-
-                outputStreamWriter.use { it.flush(); it.write(bodyText) }
+            OutputStreamWriter(context.openFileOutput(bodyPath, Context.MODE_PRIVATE)).use{
+                it.write(bodyText)
             }
             bodyPath
-
         }.flatMapSingle {
             blogEntriesRepository.updateBlogEntry(
                 BlogEntry(
                     uid = uid,
                     title = titleText,
                     bodyPath = it,
-                    cardColor = cardColor,
-                    deleted = delete
+                    cardColor = cardColor
                 )
             ).toSingle {
                 it
-            }
+            }.observeOn(AndroidSchedulers.mainThread())
         }
     }
 
-    fun logicalDelete(blogEntry: BlogEntry) = update(blogEntry.uid, blogEntry.title, blogEntry.bodyPath!!,"", blogEntry.cardColor!!, true)
+    fun logicalDelete(blogEntry: BlogEntry) : Completable = blogEntriesRepository.updateBlogEntry(blogEntry.copy( deleted = true)).observeOn(
+        AndroidSchedulers.mainThread())
 
 }

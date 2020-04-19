@@ -4,7 +4,9 @@ import android.content.Context
 import ar.edu.unq.pdes.myprivateblog.BaseViewModel
 import ar.edu.unq.pdes.myprivateblog.rx.RxSchedulers
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class PostDetailViewModel @Inject constructor(
@@ -14,9 +16,10 @@ class PostDetailViewModel @Inject constructor(
 
 
     fun delete() : Disposable {
-        return blogEntriesService.logicalDelete(post.value!!).compose(RxSchedulers.flowableAsync()).subscribe {
-            state.value = State.SUCCESS
-        }
+        return blogEntriesService.logicalDelete(post.value!!)
+            .subscribe {
+                state.value = State.POST_DELETED
+            }
     }
 
 }

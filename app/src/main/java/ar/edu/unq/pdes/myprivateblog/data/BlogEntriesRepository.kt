@@ -1,12 +1,10 @@
 package ar.edu.unq.pdes.myprivateblog.data
 
 import androidx.lifecycle.LiveDataReactiveStreams
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class BlogEntriesRepository(val appDatabase: AppDatabase) {
-    fun getAllBlogEntries() =
-        LiveDataReactiveStreams.fromPublisher(appDatabase.blogEntriesDao().getAll())
-
     fun getActivesBlogEntries() =
         LiveDataReactiveStreams.fromPublisher(appDatabase.blogEntriesDao().getAll(false))
 

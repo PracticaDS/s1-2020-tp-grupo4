@@ -44,9 +44,6 @@
         <action
             android:id="@+id/nav_action_edit_post"
             app:destination="@id/postEditFragment" />
-        <action
-            android:id="@+id/nav_action_delete_post"
-            app:destination="@+id/postsListingFragment" />
         <argument
             android:name="postId"
             app:argType="integer" />
