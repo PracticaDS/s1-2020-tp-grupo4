@@ -73,12 +73,14 @@ interface BlogEntriesDao {
     @Insert
     fun insert(entries: BlogEntry): Single<Long>
 
+    @Query("SELECT COUNT(*) FROM BlogEntries WHERE is_deleted = :deleted")
+    fun getDataCount(deleted: Boolean): Int
+
     @Update
     fun updateAll(entries: List<BlogEntry>): Completable
 
     @Update
     fun update(entry: BlogEntry): Completable
-
 
     @Delete
     fun delete(entry: BlogEntry): Completable

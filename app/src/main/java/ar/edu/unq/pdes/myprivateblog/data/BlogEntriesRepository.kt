@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveDataReactiveStreams
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class BlogEntriesRepository(val appDatabase: AppDatabase) {
+class BlogEntriesRepository(private val appDatabase: AppDatabase) {
     fun getActivesBlogEntries() =
         LiveDataReactiveStreams.fromPublisher(appDatabase.blogEntriesDao().getAll(false))
 
@@ -21,4 +21,8 @@ class BlogEntriesRepository(val appDatabase: AppDatabase) {
         appDatabase.blogEntriesDao()
             .update(album)
             .subscribeOn(Schedulers.io())
+
+    fun getDataCount() : Int {
+        return appDatabase.blogEntriesDao().getDataCount(deleted = false)
+    }
 }

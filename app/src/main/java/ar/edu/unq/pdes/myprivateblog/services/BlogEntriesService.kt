@@ -26,6 +26,10 @@ class BlogEntriesService @Inject constructor(
         return blogEntriesRepository.getActivesBlogEntries()
     }
 
+    fun getDataCount() : Int {
+        return blogEntriesRepository.getDataCount()
+    }
+
     fun create(title : String, bodyText : String, cardColor : Int) : Flowable<Long> {
         return Flowable.fromCallable {
             val fileName = UUID.randomUUID().toString() + ".body"
