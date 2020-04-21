@@ -19,7 +19,7 @@ class BlogEntriesService @Inject constructor(
         return blogEntriesRepository
             .fetchById(id)
     }
-
+ 
     fun getAll(): LiveData<List<BlogEntry>>{
         return blogEntriesRepository.getActiveBlogEntries()
     }
