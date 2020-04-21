@@ -54,7 +54,7 @@ class PostCreateFragment : BaseFragment() {
             applyStatusBarStyle(it)
         })
 
-        title.doOnTextChanged { text, start, count, after ->
+        title.doOnTextChanged { text, _, _, _ ->
             viewModel.titleText.postValue(text.toString())
         }
 
