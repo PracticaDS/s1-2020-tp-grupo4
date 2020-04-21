@@ -18,7 +18,7 @@ class BlogEntriesService @Inject constructor(
     fun fetch(id: Int) : Flowable<BlogEntry> {
         return blogEntriesRepository
             .fetchById(id)
-    }
+    } 
  
     fun getAll(): LiveData<List<BlogEntry>>{
         return blogEntriesRepository.getActiveBlogEntries()
