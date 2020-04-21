@@ -14,4 +14,6 @@ fun Int.isDisplayedInView() : ViewInteraction = Espresso.onView(ViewMatchers.wit
 
 fun Int.fillText(text : String) : ViewInteraction = Espresso.onView(ViewMatchers.withId(this)).perform(ViewActions.typeText(text))
 
+fun Int.clearText() : ViewInteraction = Espresso.onView(ViewMatchers.withId(this)).perform(ViewActions.clearText())
+
 fun Int.isMatchingWithHint(hintResource : Int): ViewInteraction = Espresso.onView(ViewMatchers.withId(this)).check(ViewAssertions.matches(ViewMatchers.withHint(hintResource)))
