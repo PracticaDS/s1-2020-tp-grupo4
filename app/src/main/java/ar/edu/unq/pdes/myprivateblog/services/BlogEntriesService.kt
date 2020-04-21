@@ -29,13 +29,8 @@ class BlogEntriesService @Inject constructor(
     }
 
     fun create(title : String, bodyText : String, cardColor : Int) : Flowable<Long> {
-        return Flowable.fromCallable {
-            val fileName = UUID.randomUUID().toString() + ".body"
-            val outputStreamWriter =
-                OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE))
-            outputStreamWriter.use { it.write(bodyText) }
-            fileName
-        }.flatMapSingle {
+        val fileName = UUID.randomUUID().toString() + ".body"
+        return writeBody(fileName, bodyText).flatMapSingle {
             blogEntriesRepository.createBlogEntry(
                 BlogEntry(
                     title = title,
