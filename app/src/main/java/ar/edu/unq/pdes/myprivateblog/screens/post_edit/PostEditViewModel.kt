@@ -16,17 +16,20 @@ class PostEditViewModel @Inject constructor(
     context: Context
 ): BaseViewModel(blogEntriesService, context) {
 
-    var editableTitle = Editable.Factory.getInstance().newEditable("")
-    var editableBody = Editable.Factory.getInstance().newEditable("")
+    var editableTitle: Editable = Editable.Factory.getInstance().newEditable("")
+    var editableBody: Editable = Editable.Factory.getInstance().newEditable("")
     val cardColor = MutableLiveData(Color.LTGRAY)
-    var titleText = ""
     var bodyText = ""
 
     fun editPost() : Disposable{
         val postSecure = post.value!!
-        return blogEntriesService.update(postSecure.uid, titleText, postSecure.bodyPath!!, bodyText, cardColor.value!!)
-            .compose(RxSchedulers.flowableAsync()).subscribe {
-            state.value = State.SUCCESS
-        }
+        return blogEntriesService.writeBody(postSecure.bodyPath!!, bodyText)
+            .flatMapSingle {
+                blogEntriesService.update(postSecure.copy(cardColor = cardColor.value!!)).toSingle { it }
+            }
+            .compose(RxSchedulers.flowableAsync())
+            .subscribe {
+                state.value = State.POST_EDITED
+            }
     }
 }

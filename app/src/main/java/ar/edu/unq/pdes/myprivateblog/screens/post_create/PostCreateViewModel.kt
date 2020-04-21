@@ -25,7 +25,7 @@ class PostCreateViewModel @Inject constructor(
         return blogEntriesService.create(titleText.value!!, bodyText, cardColor.value!!)
             .compose(RxSchedulers.flowableAsync()).subscribe {
                 postId = it.toInt()
-                state.value = State.SUCCESS
+                state.value = State.POST_CREATED
         }
     }
 

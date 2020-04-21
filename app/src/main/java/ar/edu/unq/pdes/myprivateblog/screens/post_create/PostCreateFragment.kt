@@ -30,7 +30,7 @@ class PostCreateFragment : BaseFragment() {
                     // TODO: manage error states
                 }
 
-                BaseViewModel.State.SUCCESS -> {
+                BaseViewModel.State.POST_CREATED -> {
                     findNavController().navigate(
                         PostCreateFragmentDirections.navActionSaveNewPost(
                             viewModel.postId

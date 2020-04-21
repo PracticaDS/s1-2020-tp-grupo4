@@ -10,11 +10,8 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import ar.edu.unq.pdes.myprivateblog.BaseFragment
-import ar.edu.unq.pdes.myprivateblog.ColorUtils
-import ar.edu.unq.pdes.myprivateblog.R
+import ar.edu.unq.pdes.myprivateblog.*
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
-import ar.edu.unq.pdes.myprivateblog.setAztec
 import kotlinx.android.synthetic.main.fragment_post_detail.*
 import kotlinx.android.synthetic.main.fragment_post_detail.body
 import kotlinx.android.synthetic.main.fragment_post_detail.header_background
@@ -42,12 +39,24 @@ class PostDetailFragment : BaseFragment() {
             }
         })
 
+        viewModel.state.observe(viewLifecycleOwner, Observer {
+            when(it){
+                BaseViewModel.State.POST_DELETED -> {
+                    closeAndGoBack()
+                }
+            }
+        })
+
         btn_back.setOnClickListener {
             closeAndGoBack()
         }
 
         btn_edit.setOnClickListener {
             goNavActionEditPost(args.postId)
+        }
+
+        btn_delete.setOnClickListener {
+            viewModel.delete()
         }
 
     }
