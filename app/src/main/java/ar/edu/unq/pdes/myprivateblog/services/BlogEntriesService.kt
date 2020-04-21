@@ -4,10 +4,8 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntriesRepository
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
-import ar.edu.unq.pdes.myprivateblog.data.EntityID
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.io.OutputStreamWriter
 import java.util.*
@@ -23,7 +21,7 @@ class BlogEntriesService @Inject constructor(
     }
 
     fun getAll(): LiveData<List<BlogEntry>>{
-        return blogEntriesRepository.getActivesBlogEntries()
+        return blogEntriesRepository.getActiveBlogEntries()
     }
 
     fun getDataCount() : Int {
@@ -48,23 +46,18 @@ class BlogEntriesService @Inject constructor(
         }
     }
 
-    fun update(uid: EntityID, titleText: String, bodyPath: String, bodyText: String, cardColor: Int) : Flowable<String> {
+    fun update(blogEntry: BlogEntry): Completable {
+        return blogEntriesRepository.updateBlogEntry(
+            blogEntry
+        ).observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun writeBody(bodyPath: String, bodyText: String): Flowable<String> {
         return Flowable.fromCallable {
-            OutputStreamWriter(context.openFileOutput(bodyPath, Context.MODE_PRIVATE)).use{
+            OutputStreamWriter(context.openFileOutput(bodyPath, Context.MODE_PRIVATE)).use {
                 it.write(bodyText)
             }
             bodyPath
-        }.flatMapSingle {
-            blogEntriesRepository.updateBlogEntry(
-                BlogEntry(
-                    uid = uid,
-                    title = titleText,
-                    bodyPath = it,
-                    cardColor = cardColor
-                )
-            ).toSingle {
-                it
-            }.observeOn(AndroidSchedulers.mainThread())
         }
     }
 

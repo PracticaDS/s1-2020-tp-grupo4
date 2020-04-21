@@ -53,7 +53,7 @@ class PostEditFragment : BaseFragment() {
         })
 
         title.doOnTextChanged { text,_,_,_->
-            viewModel.titleText = text.toString()
+            viewModel.post.value!!.title = text.toString()
         }
 
         body.doOnTextChanged{ text, _,_,_ ->
@@ -69,9 +69,6 @@ class PostEditFragment : BaseFragment() {
         }
 
         btn_save.setOnClickListener {
-            viewModel.post.value.let {
-                it!!.title = viewModel.titleText
-            }
             viewModel.editPost()
         }
 

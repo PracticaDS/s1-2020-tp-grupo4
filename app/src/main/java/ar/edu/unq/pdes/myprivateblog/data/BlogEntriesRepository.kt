@@ -5,7 +5,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class BlogEntriesRepository(private val appDatabase: AppDatabase) {
-    fun getActivesBlogEntries() =
+    fun getActiveBlogEntries() =
         LiveDataReactiveStreams.fromPublisher(appDatabase.blogEntriesDao().getAll(false))
 
     fun fetchLiveById(entryId: EntityID) =
