@@ -39,23 +39,20 @@ interface ApplicationComponent : AndroidInjector<BaseApplication> {
 }
 
 @Module
-object ApplicationModule {
+open class ApplicationModule {
 
-    @JvmStatic
     @Singleton
     @Provides
     fun provideAppDatabase(context: Context): AppDatabase {
         return AppDatabase.generateDatabase(context)
     }
 
-    @JvmStatic
     @Singleton
     @Provides
     fun provideBlogEntriesRepository(appDatabase: AppDatabase): BlogEntriesRepository {
         return BlogEntriesRepository(appDatabase)
     }
 
-    @JvmStatic
     @Singleton
     @Provides
     fun provideBlogEntriesService(blogEntriesRepository: BlogEntriesRepository, context: Context): BlogEntriesService {
