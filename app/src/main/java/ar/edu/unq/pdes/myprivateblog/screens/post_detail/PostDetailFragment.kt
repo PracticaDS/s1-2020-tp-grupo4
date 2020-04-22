@@ -6,8 +6,6 @@ import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ar.edu.unq.pdes.myprivateblog.*
@@ -16,7 +14,6 @@ import kotlinx.android.synthetic.main.fragment_post_detail.*
 import kotlinx.android.synthetic.main.fragment_post_detail.body
 import kotlinx.android.synthetic.main.fragment_post_detail.header_background
 import kotlinx.android.synthetic.main.fragment_post_detail.title
-import kotlinx.android.synthetic.main.fragment_post_edit.*
 import java.io.File
 
 class PostDetailFragment : BaseFragment() {
@@ -68,7 +65,7 @@ class PostDetailFragment : BaseFragment() {
         applyStatusBarStyle(post.cardColor)
         title.setTextColor(ColorUtils.findTextColorGivenBackgroundColor(post.cardColor))
 
-        body.settings.javaScriptEnabled = false
+        body.settings.javaScriptEnabled = true
         body.settings.setAppCacheEnabled(true)
         body.settings.cacheMode = WebSettings.LOAD_DEFAULT
         body.webViewClient = WebViewClient()
