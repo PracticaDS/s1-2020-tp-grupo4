@@ -71,6 +71,7 @@ class PostDetailFragment : BaseFragment() {
                 window.dismiss()
                 viewModel.delete()
             }
+            //TODO: Agregar boton de cancelar en popup y accionarlo al clickearlo
         }
 
     }
