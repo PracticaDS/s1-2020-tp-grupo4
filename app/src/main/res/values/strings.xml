@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MyPrivateBlog</string>
     <string name="hint_post_title">My Post Title</string>
+    <string name="delete_confirm">Eliminar</string>
 </resources>

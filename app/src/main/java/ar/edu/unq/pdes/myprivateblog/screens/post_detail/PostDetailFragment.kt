@@ -1,9 +1,17 @@
 package ar.edu.unq.pdes.myprivateblog.screens.post_detail
 
+import android.hardware.camera2.TotalCaptureResult
 import android.os.Bundle
+import android.text.Layout
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
+import android.widget.*
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -53,7 +61,16 @@ class PostDetailFragment : BaseFragment() {
         }
 
         btn_delete.setOnClickListener {
-            viewModel.delete()
+            val deleteView : View = layoutInflater.inflate(R.layout.popup_post_delete, null)
+            val window = PopupWindow(deleteView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, false)
+            window.isOutsideTouchable = false
+            window.showAtLocation(deleteView, Gravity.CENTER, 0, 0);
+
+            val confirmButton = deleteView.findViewById(R.id.btn_delete_confirm) as Button
+            confirmButton.setOnClickListener {
+                window.dismiss()
+                viewModel.delete()
+            }
         }
 
     }
