@@ -1,5 +1,10 @@
 package ar.edu.unq.pdes.myprivateblog
 
+import androidx.test.espresso.web.assertion.WebViewAssertions.webMatches
+import androidx.test.espresso.web.model.Atoms.getCurrentUrl
+import androidx.test.espresso.web.sugar.Web.onWebView
+import androidx.test.espresso.web.webdriver.DriverAtoms.findElement
+import androidx.test.espresso.web.webdriver.Locator
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -7,6 +12,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.matchers.JUnitMatchers.containsString
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -41,7 +47,7 @@ class PostEditTest : BaseInjectedTest() {
         R.id.body.isDisplayedInView()
 
         R.id.title.isMatchingWithValue(postTitle)
-        // TODO: add assertion on WebView matching bodyText (should also be added in create test)
+        R.id.body.webViewIsMatchingWithValue(bodyText)
     }
 
     @Test
@@ -53,7 +59,7 @@ class PostEditTest : BaseInjectedTest() {
         R.id.btn_back.isDisplayedInView()
 
         R.id.title.isMatchingWithValue(postTitle)
-        // TODO: add assertion on WebView matching bodyText (should also be added in create test)
+        R.id.body.webViewIsMatchingWithValue(bodyText)
     }
 
     @Test
@@ -71,7 +77,7 @@ class PostEditTest : BaseInjectedTest() {
         R.id.btn_edit.isDisplayedInView()
 
         R.id.title.isMatchingWithValue(postTitleEdited)
-        // TODO: add assertion on WebView matching bodyText (should also be added in create test)
+        R.id.body.webViewIsMatchingWithValue(bodyTextEdited)
     }
 
     @Test
@@ -89,5 +95,4 @@ class PostEditTest : BaseInjectedTest() {
         val finalSize = blogEntriesService.getDataCount()
         Assert.assertSame(initialSize, finalSize)
     }
-
 }

@@ -73,6 +73,7 @@ class PostsCreateTest : BaseInjectedTest(){
 
         // Verify that shows the correct information
         R.id.title.isMatchingWithValue(postTitle)
+        R.id.body.webViewIsMatchingWithValue(bodyText)
     }
 
 }
