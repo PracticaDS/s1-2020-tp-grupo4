@@ -24,23 +24,9 @@ class PostsDeleteTest : BaseInjectedTest() {
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
 
-    @Before
-    fun setup() {
-        R.id.create_new_post.clickButton()
-        R.id.title.fillText("An Title")
-        R.id.body.fillText("An body Text")
-        R.id.btn_save.clickButton()
-    }
-
     @Test
     fun whenDeletePost_shouldShowButtonAndDeleteSuccessfully(){
-        var initialSize = blogEntriesService.getDataCount()
-        R.id.btn_delete.isDisplayedInView()
-        R.id.btn_delete.clickButton()
-        R.id.btn_delete_confirm.isDisplayedInPopup()
-        R.id.btn_delete_confirm.clickPopupButton()
-        val finalSize = blogEntriesService.getDataCount()
-        Assert.assertSame(initialSize - 1, finalSize)
+        //TODO: Test snackbar
     }
 
 }

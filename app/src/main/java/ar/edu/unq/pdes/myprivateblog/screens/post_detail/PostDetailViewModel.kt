@@ -22,4 +22,8 @@ class PostDetailViewModel @Inject constructor(
             }
     }
 
+    fun undoDelete() : Disposable{
+        return blogEntriesService.undoLogicalDelete(post.value!!).subscribe()
+    }
+
 }

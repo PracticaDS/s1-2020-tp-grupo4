@@ -1,28 +1,22 @@
 package ar.edu.unq.pdes.myprivateblog.screens.post_detail
 
-import android.hardware.camera2.TotalCaptureResult
 import android.os.Bundle
-import android.text.Layout
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
-import android.widget.*
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import ar.edu.unq.pdes.myprivateblog.*
+import ar.edu.unq.pdes.myprivateblog.BaseFragment
+import ar.edu.unq.pdes.myprivateblog.BaseViewModel
+import ar.edu.unq.pdes.myprivateblog.ColorUtils
+import ar.edu.unq.pdes.myprivateblog.R
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_post_detail.*
-import kotlinx.android.synthetic.main.fragment_post_detail.body
-import kotlinx.android.synthetic.main.fragment_post_detail.header_background
-import kotlinx.android.synthetic.main.fragment_post_detail.title
 import java.io.File
+
 
 class PostDetailFragment : BaseFragment() {
     override val layoutId = R.layout.fragment_post_detail
@@ -61,17 +55,11 @@ class PostDetailFragment : BaseFragment() {
         }
 
         btn_delete.setOnClickListener {
-            val deleteView : View = layoutInflater.inflate(R.layout.popup_post_delete, null)
-            val window = PopupWindow(deleteView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, false)
-            window.isOutsideTouchable = false
-            window.showAtLocation(deleteView, Gravity.CENTER, 0, 0);
-
-            val confirmButton = deleteView.findViewById(R.id.btn_delete_confirm) as Button
-            confirmButton.setOnClickListener {
-                window.dismiss()
-                viewModel.delete()
-            }
-            //TODO: Agregar boton de cancelar en popup y accionarlo al clickearlo
+            viewModel.delete()
+            Snackbar.make(it, R.string.post_deleted_successful, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo_action, View.OnClickListener {
+                    viewModel.undoDelete()
+                }).show();
         }
 
     }
