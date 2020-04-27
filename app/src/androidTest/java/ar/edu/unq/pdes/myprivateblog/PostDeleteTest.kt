@@ -3,10 +3,11 @@ package ar.edu.unq.pdes.myprivateblog
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isFocusable
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -24,9 +25,37 @@ class PostsDeleteTest : BaseInjectedTest() {
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
 
+    @Before
+    fun setup() {
+        R.id.create_new_post.clickButton()
+        R.id.title.fillText("An Title")
+        R.id.body.fillText("An body Text")
+        R.id.btn_save.clickButton()
+    }
+
     @Test
     fun whenDeletePost_shouldShowButtonAndDeleteSuccessfully(){
-        //TODO: Test snackbar
+        val initialSize = blogEntriesService.getDataCount()
+        R.id.btn_delete.isDisplayedInView()
+        R.id.btn_delete.clickButton()
+        val finalSize = blogEntriesService.getDataCount()
+        Assert.assertSame(initialSize - 1, finalSize)
+    }
+
+    @Test
+    fun whenDeletePost_shouldShowSnackBarUndo(){
+        R.id.btn_delete.clickButton()
+        checkSnackBarMainText(R.string.post_deleted_successful)
+        checkSnackBarUndoText(R.string.undo_action)
+    }
+
+    @Test
+    fun whenDeletePost_shouldUndoThrowsSnackbar(){
+        val initialSize = blogEntriesService.getDataCount()
+        R.id.btn_delete.clickButton()
+        clickActualSnackBar()
+        val finalSize = blogEntriesService.getDataCount()
+        Assert.assertSame(initialSize, finalSize)
     }
 
 }
