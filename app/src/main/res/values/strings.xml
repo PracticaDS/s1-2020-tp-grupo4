@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">MyPrivateBlog</string>
     <string name="hint_post_title">My Post Title</string>
-    <string name="delete_confirm">Eliminar</string>
+    <string name="post_deleted_successful">Se ha eliminado el post correctamente</string>
+    <string name="undo_action">Deshacer</string>
 </resources>

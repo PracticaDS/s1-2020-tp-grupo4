@@ -20,11 +20,7 @@ fun Int.isMatchingWithValue(anStringValue : String): ViewInteraction = onView(Vi
 
 fun Int.clickButton() : ViewInteraction = onView(ViewMatchers.withId(this)).perform(click())
 
-fun Int.clickPopupButton() : ViewInteraction = onView(ViewMatchers.withId(this)).inRoot(isPlatformPopup()).perform(click())
-
 fun Int.isDisplayedInView() : ViewInteraction = onView(ViewMatchers.withId(this)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
-fun Int.isDisplayedInPopup() : ViewInteraction = onView(ViewMatchers.withId(this)).inRoot(isPlatformPopup()).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
 fun Int.fillText(text : String) : ViewInteraction = onView(ViewMatchers.withId(this)).perform(ViewActions.typeText(text))
 
