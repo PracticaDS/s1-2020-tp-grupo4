@@ -37,3 +37,14 @@ fun Int.webViewIsMatchingWithValue(anStringValue : String): Web.WebInteraction<S
                 containsString(anStringValue)
             )
         )
+
+fun checkSnackBarMainText(hintMainText : Int) : ViewInteraction =
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(ViewAssertions.matches(ViewMatchers.withText(hintMainText)))
+
+fun checkSnackBarUndoText(hintActionText : Int): ViewInteraction =
+    onView(withId(com.google.android.material.R.id.snackbar_action))
+        .check(ViewAssertions.matches(ViewMatchers.withText(hintActionText)))
+
+fun clickActualSnackBar() : ViewInteraction =
+    onView(withId(com.google.android.material.R.id.snackbar_action)).perform(click())
