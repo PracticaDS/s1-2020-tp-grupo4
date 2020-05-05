@@ -22,4 +22,20 @@ class PostsListingTest {
         R.id.create_new_post.isDisplayedInView()
     }
 
+    @Test
+    fun whenOpenAppWithNoPosts_emptyStateViewShouldDisplay() {
+        R.id.empty_state_view.isDisplayedInView()
+        R.id.posts_list_recyclerview.isGoneInView()
+    }
+
+    @Test
+    fun whenPostsAreAdded_emptyStateViewShouldNotDisplay() {
+        R.id.create_new_post.clickButton()
+        R.id.btn_save.clickButton()
+        R.id.btn_back.clickButton()
+
+        R.id.empty_state_view.isGoneInView()
+        R.id.posts_list_recyclerview.isDisplayedInView()
+    }
+
 }

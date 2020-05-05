@@ -12,6 +12,8 @@ fun Int.clickButton() : ViewInteraction = Espresso.onView(ViewMatchers.withId(th
 
 fun Int.isDisplayedInView() : ViewInteraction = Espresso.onView(ViewMatchers.withId(this)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
+fun Int.isGoneInView() : ViewInteraction = Espresso.onView(ViewMatchers.withId(this)).check((ViewAssertions.matches(ViewMatchers.withEffectiveVisibility((ViewMatchers.Visibility.GONE)))))
+
 fun Int.fillText(text : String) : ViewInteraction = Espresso.onView(ViewMatchers.withId(this)).perform(ViewActions.typeText(text))
 
 fun Int.clearText() : ViewInteraction = Espresso.onView(ViewMatchers.withId(this)).perform(ViewActions.clearText())
