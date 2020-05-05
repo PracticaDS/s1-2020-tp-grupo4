@@ -8,13 +8,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import ar.edu.unq.pdes.myprivateblog.*
+import ar.edu.unq.pdes.myprivateblog.BaseFragment
+import ar.edu.unq.pdes.myprivateblog.BaseViewModel
+import ar.edu.unq.pdes.myprivateblog.ColorUtils
+import ar.edu.unq.pdes.myprivateblog.R
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_post_detail.*
-import kotlinx.android.synthetic.main.fragment_post_detail.body
-import kotlinx.android.synthetic.main.fragment_post_detail.header_background
-import kotlinx.android.synthetic.main.fragment_post_detail.title
 import java.io.File
+
 
 class PostDetailFragment : BaseFragment() {
     override val layoutId = R.layout.fragment_post_detail
@@ -54,6 +56,10 @@ class PostDetailFragment : BaseFragment() {
 
         btn_delete.setOnClickListener {
             viewModel.delete()
+            Snackbar.make(it, R.string.post_deleted_successful, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo_action, View.OnClickListener {
+                    viewModel.undoDelete()
+                }).show();
         }
 
     }
