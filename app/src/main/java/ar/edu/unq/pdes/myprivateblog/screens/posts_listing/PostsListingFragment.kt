@@ -35,12 +35,25 @@ class PostsListingFragment : BaseFragment() {
         }
 
         viewModel.posts.observe(viewLifecycleOwner, Observer { postList ->
+            this.setView()
             posts_list_recyclerview.adapter = PostsListAdapter(postList) {
                 findNavController().navigate(PostsListingFragmentDirections.navActionOpenDetail(it))
             }
 
             posts_list_recyclerview.layoutManager = LinearLayoutManager(context)
         })
+    }
+
+    fun setView(){
+        if (viewModel.posts.value?.size == 0) {
+            posts_list_recyclerview.setVisibility(View.GONE);
+            empty_state_view.setVisibility(View.VISIBLE);
+        }
+        else {
+            posts_list_recyclerview.setVisibility(View.VISIBLE);
+            empty_state_view.setVisibility(View.GONE);
+        }
+
     }
 }
 

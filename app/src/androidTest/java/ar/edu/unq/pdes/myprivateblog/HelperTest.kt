@@ -22,6 +22,8 @@ fun Int.clickButton() : ViewInteraction = onView(ViewMatchers.withId(this)).perf
 
 fun Int.isDisplayedInView() : ViewInteraction = onView(ViewMatchers.withId(this)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
+fun Int.isGoneInView() : ViewInteraction = onView(ViewMatchers.withId(this)).check((ViewAssertions.matches(ViewMatchers.withEffectiveVisibility((ViewMatchers.Visibility.GONE)))))
+
 fun Int.fillText(text : String) : ViewInteraction = onView(ViewMatchers.withId(this)).perform(ViewActions.typeText(text))
 
 fun Int.clearText() : ViewInteraction = onView(ViewMatchers.withId(this)).perform(ViewActions.clearText())
