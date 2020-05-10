@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "901159858673",
+    "firebase_url": "https://practicas-de-desarrollo.firebaseio.com",
+    "project_id": "practicas-de-desarrollo",
+    "storage_bucket": "practicas-de-desarrollo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901159858673:android:2744448b382dfd3d48d450",
+        "android_client_info": {
+          "package_name": "ar.edu.unq.pdes.grupo4"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901159858673-d4ambda8ducpr5kssha8e7fecbmdevs6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJQytdiTV0F9KcrlRbR-UvjL5KGuWkEAQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901159858673-d4ambda8ducpr5kssha8e7fecbmdevs6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

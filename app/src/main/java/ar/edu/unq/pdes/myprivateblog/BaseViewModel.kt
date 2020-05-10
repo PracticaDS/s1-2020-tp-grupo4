@@ -7,6 +7,7 @@ import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
 import ar.edu.unq.pdes.myprivateblog.data.EntityID
 import ar.edu.unq.pdes.myprivateblog.rx.RxSchedulers
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
+import com.google.firebase.analytics.FirebaseAnalytics
 import io.reactivex.disposables.Disposable
 
 abstract class BaseViewModel constructor(
@@ -28,6 +29,10 @@ abstract class BaseViewModel constructor(
             .subscribe {
                 post.value = it
             }
+    }
+
+    fun getAnalyticsInstance(): FirebaseAnalytics {
+        return FirebaseAnalytics.getInstance(context)
     }
 
 }
