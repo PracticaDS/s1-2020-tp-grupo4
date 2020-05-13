@@ -30,6 +30,8 @@ class PostDetailFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.logEvent(args.postId)
+
         viewModel.fetchBlogEntry(args.postId)
 
         viewModel.post.observe(viewLifecycleOwner, Observer {
