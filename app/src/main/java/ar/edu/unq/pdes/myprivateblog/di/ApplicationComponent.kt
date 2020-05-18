@@ -15,6 +15,8 @@ import ar.edu.unq.pdes.myprivateblog.screens.post_edit.PostEditFragment
 import ar.edu.unq.pdes.myprivateblog.screens.post_edit.PostEditViewModel
 import ar.edu.unq.pdes.myprivateblog.screens.posts_listing.PostsListingFragment
 import ar.edu.unq.pdes.myprivateblog.screens.posts_listing.PostsListingViewModel
+import ar.edu.unq.pdes.myprivateblog.screens.sign.OauthSignFragment
+import ar.edu.unq.pdes.myprivateblog.screens.sign.OauthSignViewModel
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
 import dagger.*
 import dagger.android.AndroidInjector
@@ -65,7 +67,8 @@ open class ApplicationModule {
         PostsListingModule::class,
         PostDetailModule::class,
         PostEditModule::class,
-        PostCreateModule::class
+        PostCreateModule::class,
+        OauthSignModule::class
     ]
 )
 abstract class MainActivityModule {
@@ -93,6 +96,20 @@ abstract class PostsListingModule {
     @IntoMap
     @ViewModelKey(PostsListingViewModel::class)
     abstract fun bindViewModel(viewmodel: PostsListingViewModel): ViewModel
+}
+
+@Module
+abstract class OauthSignModule {
+
+    @ContributesAndroidInjector(modules = [
+        ViewModelBuilder::class
+    ])
+    internal abstract fun oauthSignFragment(): OauthSignFragment
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(OauthSignViewModel::class)
+    abstract fun bindViewModel(viewmodel: OauthSignViewModel): ViewModel
 }
 
 @Module
