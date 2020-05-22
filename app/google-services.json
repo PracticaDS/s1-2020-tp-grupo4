@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "901159858673-1bcaa4cvc2k04231m2amrdogdgtpsqur.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ar.edu.unq.pdes.grupo4",
+            "certificate_hash": "b5dd704f54318d6e60403f1840741f4676b85c99"
+          }
+        },
+        {
           "client_id": "901159858673-d4ambda8ducpr5kssha8e7fecbmdevs6.apps.googleusercontent.com",
           "client_type": 3
         }

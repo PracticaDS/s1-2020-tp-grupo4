@@ -6,6 +6,17 @@
     app:startDestination="@id/postsListingFragment">
 
     <fragment
+        android:id="@+id/oauthSignFragment"
+        android:name="ar.edu.unq.pdes.myprivateblog.screens.sign.OauthSignFragment"
+        android:label="OauthSignFragment"
+        tools:layout="@layout/oauth_sign">
+        <action
+            android:id="@+id/sign_in_button"
+            app:destination="@+id/postsListingFragment"/>
+
+    </fragment>
+
+    <fragment
         android:id="@+id/postsListingFragment"
         android:name="ar.edu.unq.pdes.myprivateblog.screens.posts_listing.PostsListingFragment"
         android:label="PostsListingFragment"
