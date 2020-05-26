@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/palette_pastel_yellow_02"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="-350dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/create_new_post"
