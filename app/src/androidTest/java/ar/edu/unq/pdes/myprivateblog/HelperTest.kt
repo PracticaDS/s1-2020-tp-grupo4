@@ -1,52 +1,32 @@
 package ar.edu.unq.pdes.myprivateblog
 
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.web.assertion.WebViewAssertions
-import androidx.test.espresso.web.model.Atoms
-import androidx.test.espresso.web.sugar.Web
-import androidx.test.espresso.web.webdriver.DriverAtoms
-import androidx.test.espresso.web.webdriver.Locator
-import org.hamcrest.CoreMatchers.containsString
+import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.*
+import org.hamcrest.CoreMatchers.allOf
 
-fun Int.isMatchingWithValue(anStringValue : String): ViewInteraction = onView(ViewMatchers.withId(this)).check(ViewAssertions.matches(ViewMatchers.withText(anStringValue)))
 
-fun Int.clickButton() : ViewInteraction = onView(ViewMatchers.withId(this)).perform(click())
+fun Int.isMatchingWithValue(anStringValue : String): ViewInteraction = onView(withId(this)).check(matches(withText(anStringValue)))
 
-fun Int.isDisplayedInView() : ViewInteraction = onView(ViewMatchers.withId(this)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+fun Int.clickButton() : ViewInteraction = onView(withId(this)).perform(click())
 
-fun Int.isGoneInView() : ViewInteraction = onView(ViewMatchers.withId(this)).check((ViewAssertions.matches(ViewMatchers.withEffectiveVisibility((ViewMatchers.Visibility.GONE)))))
+fun Int.isDisplayedInView() : ViewInteraction = onView(withId(this)).check(matches(isDisplayed()))
 
-fun Int.fillText(text : String) : ViewInteraction = onView(ViewMatchers.withId(this)).perform(ViewActions.typeText(text))
+fun Int.isGoneInView() : ViewInteraction = onView(withId(this)).check((matches(withEffectiveVisibility((Visibility.GONE)))))
 
-fun Int.clearText() : ViewInteraction = onView(ViewMatchers.withId(this)).perform(ViewActions.clearText())
+fun Int.fillText(text : String) : ViewInteraction = onView(withId(this)).perform(typeText(text))
 
-fun Int.isMatchingWithHint(hintResource : Int): ViewInteraction = Espresso.onView(ViewMatchers.withId(this)).check(ViewAssertions.matches(ViewMatchers.withHint(hintResource)))
+fun Int.clearText() : ViewInteraction = onView(withId(this)).perform(ViewActions.clearText())
 
-fun Int.webViewIsMatchingWithValue(anStringValue : String): Web.WebInteraction<String> =
-    Web.onWebView(withId(this))
-        .withElement(DriverAtoms.findElement(Locator.TAG_NAME, "html"))
-        .check(
-            WebViewAssertions.webMatches(
-                Atoms.getCurrentUrl(),
-                containsString(anStringValue)
-            )
-        )
+fun Int.isMatchingWithHint(hintResource : Int): ViewInteraction = onView(withId(this)).check(matches(withHint(hintResource)))
 
-fun checkSnackBarMainText(hintMainText : Int) : ViewInteraction =
-    onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(ViewAssertions.matches(ViewMatchers.withText(hintMainText)))
+fun Int.webViewIsMatchingWithValue(anStringValue : String): ViewInteraction = onView(allOf(withId(this), isDisplayed())).check(matches(withText(anStringValue)))
 
-fun checkSnackBarUndoText(hintActionText : Int): ViewInteraction =
-    onView(withId(com.google.android.material.R.id.snackbar_action))
-        .check(ViewAssertions.matches(ViewMatchers.withText(hintActionText)))
+fun checkSnackBarMainText(hintMainText : Int) : ViewInteraction = onView(withId(com.google.android.material.R.id.snackbar_text)).check(matches(withText(hintMainText)))
 
-fun clickActualSnackBar() : ViewInteraction =
-    onView(withId(com.google.android.material.R.id.snackbar_action)).perform(click())
+fun checkSnackBarUndoText(hintActionText : Int): ViewInteraction = onView(withId(com.google.android.material.R.id.snackbar_action)).check(matches(withText(hintActionText)))
+
+fun clickActualSnackBar() : ViewInteraction = onView(withId(com.google.android.material.R.id.snackbar_action)).perform(click())
