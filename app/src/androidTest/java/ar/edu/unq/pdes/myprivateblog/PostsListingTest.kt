@@ -10,12 +10,10 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class PostsListingTest {
-
     
     @get:Rule
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
-
 
     @Test
     fun whenOpenApp_createButtonShouldOpen() {

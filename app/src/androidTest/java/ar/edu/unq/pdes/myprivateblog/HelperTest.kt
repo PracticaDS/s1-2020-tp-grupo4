@@ -6,7 +6,13 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.web.assertion.WebViewAssertions
+import androidx.test.espresso.web.model.Atoms
+import androidx.test.espresso.web.sugar.Web
+import androidx.test.espresso.web.webdriver.DriverAtoms
+import androidx.test.espresso.web.webdriver.Locator
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.containsString
 
 
 fun Int.isMatchingWithValue(anStringValue : String): ViewInteraction = onView(withId(this)).check(matches(withText(anStringValue)))
@@ -23,7 +29,17 @@ fun Int.clearText() : ViewInteraction = onView(withId(this)).perform(ViewActions
 
 fun Int.isMatchingWithHint(hintResource : Int): ViewInteraction = onView(withId(this)).check(matches(withHint(hintResource)))
 
-fun Int.webViewIsMatchingWithValue(anStringValue : String): ViewInteraction = onView(allOf(withId(this), isDisplayed())).check(matches(withText(anStringValue)))
+fun Int.viewIsMatchingWithValue(anStringValue : String): ViewInteraction = onView(allOf(withId(this), isDisplayed())).check(matches(withText(anStringValue)))
+
+fun Int.webViewIsMatchingWithValue(anStringValue : String): Web.WebInteraction<String> =
+    Web.onWebView(withId(this))
+        .withElement(DriverAtoms.findElement(Locator.TAG_NAME, "html"))
+        .check(
+            WebViewAssertions.webMatches(
+                Atoms.getCurrentUrl(),
+                containsString(anStringValue)
+            )
+        )
 
 fun checkSnackBarMainText(hintMainText : Int) : ViewInteraction = onView(withId(com.google.android.material.R.id.snackbar_text)).check(matches(withText(hintMainText)))
 
