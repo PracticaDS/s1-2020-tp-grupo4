@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/activity_main">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/login_button"
+            android:title="Login"
+            android:icon="@drawable/ic_action_user"
+            ></item>
+
+        <item
+            android:id="@+id/logout_button"
+            android:title="Logout"
+            android:icon="@drawable/ic_action_user"
+            ></item>
+
+        <item
+            android:id="@+id/sync_button"
+            android:title="Sync"
+            android:icon="@drawable/ic_action_sync"
+            ></item>
+    </group>
+
+</menu>

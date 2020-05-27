@@ -8,10 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import ar.edu.unq.pdes.myprivateblog.BaseFragment
-import ar.edu.unq.pdes.myprivateblog.BaseViewModel
-import ar.edu.unq.pdes.myprivateblog.ColorUtils
-import ar.edu.unq.pdes.myprivateblog.R
+import ar.edu.unq.pdes.myprivateblog.*
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_post_detail.*

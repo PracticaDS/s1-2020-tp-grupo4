@@ -10,21 +10,24 @@
         android:id="@+id/posts_list_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?android:attr/actionBarSize"
         android:background="@color/palette_pastel_yellow_02"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="-350dp" />
+        tools:layout_editor_absoluteY="0dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/create_new_post"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
+        android:layout_marginBottom="16dp"
         android:src="@drawable/ic_add"
-        app:backgroundTint="@color/palette_pastel_salmon_01"
-        app:tint="@color/white"
+        app:backgroundTint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/white" />
 
     <ImageView
         android:id="@+id/empty_state_view"
@@ -32,12 +35,13 @@
         android:layout_height="165dp"
         android:layout_marginTop="250dp"
         android:layout_marginEnd="120dp"
+        android:scaleType="center"
         app:layout_constraintBottom_toTopOf="@+id/posts_list_recyclerview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="0.014"
         app:srcCompat="@drawable/empty" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
