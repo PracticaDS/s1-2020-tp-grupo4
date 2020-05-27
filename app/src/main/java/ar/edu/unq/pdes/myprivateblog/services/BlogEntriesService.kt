@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntriesRepository
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
+import ar.edu.unq.pdes.myprivateblog.data.EntityID
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -18,26 +19,30 @@ class BlogEntriesService @Inject constructor(
     fun fetch(id: Int) : Flowable<BlogEntry> {
         return blogEntriesRepository
             .fetchById(id)
-    } 
- 
+    }
+
     fun getAll(): LiveData<List<BlogEntry>>{
         return blogEntriesRepository.getActiveBlogEntries()
+    }
+
+    fun getAllUnsynced(): LiveData<List<BlogEntry>>{
+        return blogEntriesRepository.getBlogEntriesWith(synced = false)
     }
 
     fun getDataCount() : Int {
         return blogEntriesRepository.getDataCount()
     }
 
-    fun create(title : String, bodyText : String, cardColor : Int) : Flowable<Long> {
+    fun create(title : String, bodyText : String, cardColor : Int, uid: Int? = null) : Flowable<Long> {
         val fileName = UUID.randomUUID().toString() + ".body"
         return writeBody(fileName, bodyText).flatMapSingle {
-            blogEntriesRepository.createBlogEntry(
-                BlogEntry(
-                    title = title,
-                    bodyPath = it,
-                    cardColor = cardColor
-                )
+            val newBlogEntry = BlogEntry(
+                title = title,
+                bodyPath = it,
+                cardColor = cardColor
             )
+            if (uid != null) newBlogEntry.uid = uid
+            blogEntriesRepository.createBlogEntry(newBlogEntry)
         }
     }
 
