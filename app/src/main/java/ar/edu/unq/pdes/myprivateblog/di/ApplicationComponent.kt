@@ -18,6 +18,7 @@ import ar.edu.unq.pdes.myprivateblog.screens.posts_listing.PostsListingViewModel
 import ar.edu.unq.pdes.myprivateblog.screens.sign.OauthSignFragment
 import ar.edu.unq.pdes.myprivateblog.screens.sign.OauthSignViewModel
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
+import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesSyncingService
 import dagger.*
 import dagger.android.AndroidInjector
 import dagger.android.ContributesAndroidInjector
@@ -59,6 +60,12 @@ open class ApplicationModule {
     @Provides
     fun provideBlogEntriesService(blogEntriesRepository: BlogEntriesRepository, context: Context): BlogEntriesService {
         return BlogEntriesService(blogEntriesRepository, context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideBlogEntriesSyncingService(blogEntriesService: BlogEntriesService, context: Context): BlogEntriesSyncingService {
+        return BlogEntriesSyncingService(blogEntriesService, context)
     }
 }
 
