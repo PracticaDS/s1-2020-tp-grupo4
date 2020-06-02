@@ -91,4 +91,10 @@ class PostEditTest : BaseInjectedTest() {
         val finalSize = blogEntriesService.getDataCount()
         Assert.assertSame(initialSize, finalSize)
     }
+
+    @Test
+    fun whenEnteringPostEdit_shouldNotShowTheToolbar(){
+        R.id.btn_edit.clickButton()
+        R.id.general_toolbar.isGoneInView()
+    }
 }

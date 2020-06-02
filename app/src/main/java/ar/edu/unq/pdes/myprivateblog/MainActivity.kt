@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setContentView(R.layout.activity_main)
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(general_toolbar)
         val actionBar = supportActionBar
         actionBar?.title = "My Private Blog"
         actionBar?.setHomeButtonEnabled(true)
@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val drawerToggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle (
             this,
-            drawyer_layout,
-            toolbar,
+            main_activity,
+            general_toolbar,
             R.string.open_toolbar,
             R.string.close_toolbar
         ) {
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         drawerToggle.isDrawerIndicatorEnabled = true
-        drawyer_layout.addDrawerListener(drawerToggle)
+        main_activity.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
@@ -84,13 +84,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 TODO("not implemented")
             }
         }
-        drawyer_layout.closeDrawer(GravityCompat.START)
+        main_activity.closeDrawer(GravityCompat.START)
         return true
     }
 
     override fun onBackPressed() {
-        if (drawyer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawyer_layout.closeDrawer(GravityCompat.START)
+        if (main_activity.isDrawerOpen(GravityCompat.START)) {
+            main_activity.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }
