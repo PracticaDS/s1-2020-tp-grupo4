@@ -12,7 +12,7 @@ import java.io.Serializable
 
 typealias EntityID = Int
 
-@Database(entities = [BlogEntry::class], version = 1)
+@Database(entities = [BlogEntry::class], version = 2)
 @TypeConverters(ThreeTenTimeTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -22,7 +22,9 @@ abstract class AppDatabase : RoomDatabase() {
         fun generateDatabase(context: Context) = Room.databaseBuilder(
             context,
             AppDatabase::class.java, "myprivateblog.db"
-        ).build()
+        )
+            .addMigrations(MIGRATION_1_2)
+            .build()
     }
 
 }
@@ -47,6 +49,9 @@ data class BlogEntry(
     @ColumnInfo(name = "is_deleted")
     val deleted: Boolean = false,
 
+    @ColumnInfo(name = "is_synced")
+    var synced: Boolean = false,
+
     @ColumnInfo(name = "date")
     val date: OffsetDateTime? = null,
 
@@ -61,8 +66,18 @@ interface BlogEntriesDao {
     @Query("SELECT * FROM BlogEntries ORDER BY date DESC")
     fun getAll(): Flowable<List<BlogEntry>>
 
-    @Query("SELECT * FROM BlogEntries WHERE is_deleted = :deleted  ORDER BY date DESC")
-    fun getAll(deleted: Boolean): Flowable<List<BlogEntry>>
+    // * We put a guard in case that a user has data from a previous version
+    // where the entry does not have the is_synced column.
+    @Query("""
+        SELECT * FROM BlogEntries
+        WHERE (:deleted IS NULL OR is_deleted = :deleted)
+        AND (:synced IS NULL OR is_synced = :synced)
+        ORDER BY date DESC
+    """)
+    fun getAll(
+        deleted: Boolean? = null,
+        synced:  Boolean? = null
+    ): Flowable<List<BlogEntry>>
 
     @Query("SELECT * FROM BlogEntries WHERE uid = :entryId LIMIT 1")
     fun loadById(entryId: EntityID): Flowable<BlogEntry>

@@ -79,6 +79,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$androidXRoomVersion"
     implementation "androidx.room:room-ktx:$androidXRoomVersion"
     implementation "androidx.room:room-rxjava2:$androidXRoomVersion"
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     kapt "androidx.room:room-compiler:$androidXRoomVersion"
     implementation "android.arch.persistence.room:rxjava2:1.1.1"
 
@@ -118,7 +119,6 @@ dependencies {
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation 'com.google.firebase:firebase-auth:19.1.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
-
-    implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
+    implementation 'com.google.firebase:firebase-firestore:21.2.1'
 
 }
