@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:background="@color/colorPrimaryLight">
+
+    <TextView
+        android:id="@+id/toolbar_title"
+        style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+        android:layout_centerHorizontal="true"
+        android:textSize="50sp"
+        android:fontFamily="@font/main_font"
+        android:text="@string/app_name_spaces"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/app_name_spaces" />
+
+    <ImageView
+        android:id="@+id/post_its"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar_title"
+        android:contentDescription="@string/portalview"
+        android:layout_marginBottom="90dp"
+        android:src="@drawable/post_its"
+    />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="140dp"
-        android:layout_marginTop="244dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"/>
 
-    <Button
-        android:id="@+id/sign_out_button"
-        android:layout_width="126dp"
-        android:layout_height="53dp"
-        android:layout_marginStart="140dp"
-        android:text="Signout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sign_in_button" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

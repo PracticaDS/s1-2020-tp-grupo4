@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">MyPrivateBlog</string>
+    <string name="app_name_spaces">My Private Blog</string>
     <string name="hint_post_title">My Post Title</string>
     <string name="post_deleted_successful">Se ha eliminado el post correctamente</string>
     <string name="undo_action">Deshacer</string>
     <string name="web_client_id">901159858673-d4ambda8ducpr5kssha8e7fecbmdevs6.apps.googleusercontent.com</string>
+    <string name="portalview">PortalView</string>
 </resources>

@@ -39,9 +39,6 @@ class OauthSignFragment : BaseFragment() {
             signIn()
         }
 
-        sign_out_button.setOnClickListener{
-            signOut()
-        }
     }
 
     private fun signIn() {
