@@ -6,4 +6,6 @@
     <string name="web_client_id">901159858673-d4ambda8ducpr5kssha8e7fecbmdevs6.apps.googleusercontent.com</string>
     <string name="open_toolbar">Open</string>
     <string name="close_toolbar">Close</string>
+    <string name="app_name_spaces">My Private Blog</string>
+    <string name="portalview">PortalView</string>
 </resources>
