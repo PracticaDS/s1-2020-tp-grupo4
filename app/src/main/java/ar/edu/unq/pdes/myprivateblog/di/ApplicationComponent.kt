@@ -20,6 +20,7 @@ import ar.edu.unq.pdes.myprivateblog.screens.sign.OauthSignViewModel
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesSyncingService
 import ar.edu.unq.pdes.myprivateblog.services.EncryptionService
+import ar.edu.unq.pdes.myprivateblog.services.drive.GoogleDriveService
 import dagger.*
 import dagger.android.AndroidInjector
 import dagger.android.ContributesAndroidInjector
@@ -73,6 +74,12 @@ open class ApplicationModule {
     @Provides
     fun provideEncryptionService(context: Context): EncryptionService {
         return EncryptionService(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGoogleDriveService(context: Context): GoogleDriveService {
+        return GoogleDriveService(context)
     }
 }
 

@@ -45,6 +45,7 @@ class PostsListingFragment : BaseFragment() {
         })
 
         viewModel.sync()
+        viewModel.getDriveToken()
     }
 
     fun setView(){
