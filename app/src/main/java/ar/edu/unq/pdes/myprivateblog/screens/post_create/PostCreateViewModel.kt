@@ -6,12 +6,16 @@ import androidx.lifecycle.MutableLiveData
 import ar.edu.unq.pdes.myprivateblog.BaseViewModel
 import ar.edu.unq.pdes.myprivateblog.rx.RxSchedulers
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
+import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesSyncingService
+import ar.edu.unq.pdes.myprivateblog.services.EncryptionService
 import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 
 
 class PostCreateViewModel @Inject constructor(
     blogEntriesService: BlogEntriesService,
+    val encryptionService: EncryptionService,
+    val blogEntriesSyncingService: BlogEntriesSyncingService,
     context: Context
 ): BaseViewModel(blogEntriesService, context) {
 
@@ -26,6 +30,16 @@ class PostCreateViewModel @Inject constructor(
             .compose(RxSchedulers.flowableAsync()).subscribe {
                 postId = it.toInt()
                 state.value = State.POST_CREATED
+                sync()
+        }
+    }
+
+    private fun sync() {
+        if (SYNCING_FEATURE_ENABLED) {
+            val secretKey = encryptionService.retrieveSecretKey()
+            if (secretKey != null) {
+                blogEntriesSyncingService.uploadUnsyncedBlogEntries(secretKey)
+            }
         }
     }
 
