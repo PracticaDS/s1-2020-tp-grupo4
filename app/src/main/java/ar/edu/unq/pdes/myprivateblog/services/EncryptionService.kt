@@ -20,6 +20,7 @@ class EncryptionService @Inject constructor(
     val context: Context
 ) {
     private val charset = Charsets.UTF_8
+    private val SALT_SIZE = 16
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
     /**
@@ -46,24 +47,53 @@ class EncryptionService @Inject constructor(
     }
 
     /**
+     * Generates a new salt for encrypting data
+     */
+    fun generateSalt(): ByteArray {
+        val secureRandom = SecureRandom.getInstance("SHA1PRNG")
+        val salt = ByteArray(SALT_SIZE)
+        secureRandom.nextBytes(salt)
+        return salt
+    }
+
+    /**
+     * Concats the salt (represented by a ByteArray) and the encryptedData (represented by a
+     * ByteArray).
+     * Returns one ByteArray containing both data.
+     */
+    fun concatWithSalt(salt: ByteArray, encryptedData: ByteArray): ByteArray = salt + encryptedData
+
+    /**
+     * Using the data generated with #concatWithSalt, splits the ByteArray to obtain the salt and
+     * the encrypted data.
+     * Returns a Pair<ByteArray, ByteArray> containing the encrypted data as the first member and
+     * the salt as the second member.
+     */
+    fun getSaltAndEncryptedData(data: ByteArray): Pair<ByteArray, ByteArray> {
+        val salt = data.copyOfRange(0, SALT_SIZE)
+        val encryptedData = data.copyOfRange(SALT_SIZE, data.size)
+        return Pair(encryptedData, salt)
+    }
+
+    /**
      * Encrypts a String with a secret key
      */
-    fun encrypt(yourKey: SecretKey, plainText: String): ByteArray {
+    fun encrypt(yourKey: SecretKey, plainText: String, salt: ByteArray): ByteArray {
         val plainTextBase64 = plainText.toByteArray(charset)
-        val data = yourKey.getEncoded()
+        val data = yourKey.encoded
         val skeySpec = SecretKeySpec(data, 0, data.size, "AES")
         val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, IvParameterSpec(ByteArray(cipher.blockSize)))
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, IvParameterSpec(salt))
         return cipher.doFinal(plainTextBase64)
     }
 
     /**
      * Decrypts a String with a secret key
      */
-    fun decrypt(yourKey: SecretKey, plainTextBase64: ByteArray): String {
+    fun decrypt(yourKey: SecretKey, encryptedData: ByteArray, salt: ByteArray): String {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
-        cipher.init(Cipher.DECRYPT_MODE, yourKey, IvParameterSpec(ByteArray(cipher.blockSize)))
-        val decrypted = cipher.doFinal(plainTextBase64)
+        cipher.init(Cipher.DECRYPT_MODE, yourKey, IvParameterSpec(salt))
+        val decrypted = cipher.doFinal(encryptedData)
         return decrypted.toString(charset)
     }
 

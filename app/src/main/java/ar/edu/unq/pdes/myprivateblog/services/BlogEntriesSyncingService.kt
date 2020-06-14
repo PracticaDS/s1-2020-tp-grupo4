@@ -3,12 +3,14 @@ package ar.edu.unq.pdes.myprivateblog.services
 import android.content.Context
 import android.graphics.Color
 import android.util.Base64
-import ar.edu.unq.pdes.myprivateblog.R
+import ar.edu.unq.pdes.myprivateblog.BaseViewModel
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
 import ar.edu.unq.pdes.myprivateblog.data.EntityID
+import ar.edu.unq.pdes.myprivateblog.rx.RxSchedulers
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import io.reactivex.rxkotlin.toObservable
 import org.threeten.bp.OffsetDateTime
 import java.io.File
 import java.io.Serializable
@@ -33,7 +35,13 @@ class BlogEntriesSyncingService @Inject constructor (
                             .document("users/$userUid")
                             .collection("blogEntries")
                             .document(it.uid.toString())
-                        val blogEntryForUpload = convertForUploading(it, secretKey)
+                        val salt = if (it.salt != null) {
+                            it.salt!!
+                        } else {
+                            it.salt = encryptionService.generateSalt()
+                            it.salt!!
+                        }
+                        val blogEntryForUpload = convertForUploading(it, secretKey, salt)
                         batch.set(
                             userBlogEntrysRef,
                             blogEntryForUpload,
@@ -42,7 +50,11 @@ class BlogEntriesSyncingService @Inject constructor (
                     }
                 }.addOnCompleteListener {
                     if (it.isSuccessful) {
-                        list.forEach { blogEntriesService.update(it.copy(synced = true)) }
+                        list
+                            .map { blogEntry -> blogEntriesService.update(blogEntry.copy(synced = true, salt = blogEntry.salt)) }
+                            .toObservable()
+                            .flatMapCompletable { completables -> completables }
+                            .subscribe()
                     }
                 }
             }
@@ -62,10 +74,12 @@ class BlogEntriesSyncingService @Inject constructor (
                         task.result?.forEach { it ->
                             val blogEntry = it.toObject(BlogEntryFirestore::class.java)
                             val blogEntryBody = if (blogEntry.encryptedBody != null) {
-                                val encryptedBody = Base64.decode(blogEntry.encryptedBody!!, Base64.NO_WRAP)
+                                val encryptedBodyWithSalt = Base64.decode(blogEntry.encryptedBody!!, Base64.NO_WRAP)
+                                val encryptedBodyAndSalt = encryptionService.getSaltAndEncryptedData(encryptedBodyWithSalt)
                                 encryptionService.decrypt(
                                     secretKey,
-                                    encryptedBody
+                                    encryptedBodyAndSalt.first,
+                                    encryptedBodyAndSalt.second
                                 )
                             } else blogEntry.body
 
@@ -81,15 +95,16 @@ class BlogEntriesSyncingService @Inject constructor (
         }
     }
 
-    private fun convertForUploading (blogEntry: BlogEntry, secretKey: SecretKey): BlogEntryFirestore {
+    private fun convertForUploading (blogEntry: BlogEntry, secretKey: SecretKey, salt: ByteArray ): BlogEntryFirestore {
         val content = File(context.filesDir, blogEntry.bodyPath!!).readText()
-        val encryptedContent = encryptionService.encrypt(secretKey, content)
+        val encryptedContent = encryptionService.encrypt(secretKey, content, salt)
+        val encryptedContentWithSalt = encryptionService.concatWithSalt(salt, encryptedContent)
         // Encoding to String is needed because ByteArray is not serializable
-        val encodedEncryptedContent = Base64.encodeToString(encryptedContent, Base64.NO_WRAP)
+        val encodedEncryptedContentWithSalt = Base64.encodeToString(encryptedContentWithSalt, Base64.NO_WRAP)
         return BlogEntryFirestore(
             blogEntry.uid,
             blogEntry.title,
-            encodedEncryptedContent,
+            encodedEncryptedContentWithSalt,
             blogEntry.imagePath,
             blogEntry.deleted,
             blogEntry.date,

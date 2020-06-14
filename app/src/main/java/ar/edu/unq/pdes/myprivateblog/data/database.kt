@@ -12,7 +12,7 @@ import java.io.Serializable
 
 typealias EntityID = Int
 
-@Database(entities = [BlogEntry::class], version = 2)
+@Database(entities = [BlogEntry::class], version = 3)
 @TypeConverters(ThreeTenTimeTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -23,7 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
             context,
             AppDatabase::class.java, "myprivateblog.db"
         )
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
     }
 
@@ -51,6 +51,9 @@ data class BlogEntry(
 
     @ColumnInfo(name = "is_synced")
     var synced: Boolean = false,
+
+    @ColumnInfo(name = "salt", typeAffinity = ColumnInfo.BLOB)
+    var salt: ByteArray? = null,
 
     @ColumnInfo(name = "date")
     val date: OffsetDateTime? = null,
