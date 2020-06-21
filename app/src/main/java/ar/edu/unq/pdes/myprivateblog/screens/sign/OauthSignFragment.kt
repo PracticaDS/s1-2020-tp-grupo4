@@ -25,6 +25,7 @@ class OauthSignFragment : BaseFragment() {
     private val viewModel by viewModels<OauthSignViewModel> { viewModelFactory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         sign_in_button.setOnClickListener {
             signIn()
         }
@@ -66,7 +67,7 @@ class OauthSignFragment : BaseFragment() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
-                    viewModel.googleDriveService.getDriveToken(acct)
+                    viewModel.googleDriveService.getDriveToken()
                     updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.

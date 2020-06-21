@@ -9,6 +9,10 @@ import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesSyncingService
 import ar.edu.unq.pdes.myprivateblog.services.EncryptionService
 import ar.edu.unq.pdes.myprivateblog.services.drive.GoogleDriveService
+import ar.edu.unq.pdes.myprivateblog.services.googleApi.GoogleApiService
+import io.reactivex.Observable
+import timber.log.Timber
+import java.util.concurrent.Executor
 import javax.inject.Inject
 
 class PostsListingViewModel @Inject constructor(
@@ -37,12 +41,21 @@ class PostsListingViewModel @Inject constructor(
             googleDriveService.getDriveToken()
         } else {
             Thread {
+
                 googleDriveService
                     .getTokenKey()
+                    .map {
+                        if (it == null) {
+                            // Create key and pass it in the next line.
+                            return@map googleDriveService.createKeyFile("password")
+                        } else {
+                            return@map Observable.just(it)
+                        }
+                    }
                     .subscribe({
-                        Log.d("DRIVE", it.asString)
+                        Timber.d("Success")
                     }, {
-                        Log.e("DRIVE", it.message)
+                        Timber.e(it)
                     })
             }.start()
         }

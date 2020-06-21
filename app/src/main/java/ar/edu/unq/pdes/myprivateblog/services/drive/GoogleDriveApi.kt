@@ -11,21 +11,25 @@ interface GoogleDriveApi {
     // Spaces must be "appDataFolder"
     @GET("/drive/v3/files")
     fun getFiles(@Header("Authorization") authToken: String,
-                 @Query("spaces") key: String = "appDataFolder"
+                 @Query("q") query: String,
+                 @Query("spaces") spaces: String = "appDataFolder",
+                 @Query("key") key: String = "AIzaSyDJQytdiTV0F9KcrlRbR-UvjL5KGuWkEAQ"
     ): Observable<GetListResponse>
 
     // Spaces must be "appDataFolder"
     @GET("/drive/v3/files/{fileId}")
-    fun getKeyFile(@Path("fileId") fileId: String,
-                        @Header("Authorization") authToken: String,
-                        @Query("spaces") key: String = "appDataFolder"
+    fun getFile(@Path("fileId") fileId: String,
+                @Header("Authorization") authToken: String,
+                @Query("spaces") spaces: String = "appDataFolder",
+                @Query("key") key: String = "AIzaSyDJQytdiTV0F9KcrlRbR-UvjL5KGuWkEAQ"
     ): Observable<JsonObject>
 
     // Spaces must be "appDataFolder"
     @GET("/drive/v3/files/generateIds")
     fun getNewFileId(@Header("Authorization") authToken: String,
                      @Query("count") count: Int = 1,
-                     @Query("space") key: String = "appDataFolder"
+                     @Query("space") spaces: String = "appDataFolder",
+                     @Query("key") key: String = "AIzaSyDJQytdiTV0F9KcrlRbR-UvjL5KGuWkEAQ"
     ): Observable<GenerateIdsResponse>
 
     // Spaces must be "appDataFolder"
@@ -35,7 +39,8 @@ interface GoogleDriveApi {
     fun createKeyFile(@Part metadata: MultipartBody.Part,
                       @Part fileMedia: MultipartBody.Part,
                       @Header("Authorization") authToken: String,
-                      @Query("spaces") key: String = "appDataFolder",
+                      @Query("spaces") spaces: String = "appDataFolder",
+                      @Query("key") key: String = "AIzaSyDJQytdiTV0F9KcrlRbR-UvjL5KGuWkEAQ",
                       @Query("uploadType") type: String = "multipart"
     ): Completable
 }

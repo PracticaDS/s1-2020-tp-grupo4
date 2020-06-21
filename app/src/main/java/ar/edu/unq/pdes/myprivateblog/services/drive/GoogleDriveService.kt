@@ -2,11 +2,14 @@ package ar.edu.unq.pdes.myprivateblog.services.drive
 
 import android.content.Context
 import android.util.Log
+import ar.edu.unq.pdes.myprivateblog.R
+import ar.edu.unq.pdes.myprivateblog.services.googleApi.GoogleApiService
 import ar.edu.unq.pdes.myprivateblog.services.utils.RetrofitServiceBuilder
 import ar.edu.unq.pdes.myprivateblog.services.utils.ThreadedTask
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.common.Scopes
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -15,12 +18,14 @@ import io.reactivex.Observable
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import timber.log.Timber
 import java.io.File
 import java.util.concurrent.Executor
 import javax.inject.Inject
 
 class GoogleDriveService @Inject constructor(
-    val context: Context
+    val context: Context,
+    private val googleApiService: GoogleApiService
 ){
     private val googleDriveService = RetrofitServiceBuilder
         .buildService(GoogleDriveApi::class.java)
@@ -31,21 +36,36 @@ class GoogleDriveService @Inject constructor(
         return "Bearer $authToken"
     }
 
+    private fun parameterForFileName(fileName: String) = "name+%3D+'$fileName'"
+
     fun getDriveToken() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.getIdToken(true)?.addOnCompleteListener {
             if (it.isSuccessful) {
-                authToken = it.result!!.token
+                val acct = GoogleSignIn.getLastSignedInAccount(context)
+                if (acct?.getServerAuthCode() != null) {
+                    Thread {
+                        googleApiService.getToken(
+                            it.result!!.token!!,
+                            acct.getServerAuthCode()!!
+                        )
+                            .subscribe(
+                                { response ->
+                                    authToken = response.access_token
+                                },
+                                { error ->
+                                    Timber.e(error)
+                                }
+                            )
+                    }.start()
+                }
             } else {
-                Log.e("ERROR", it.exception.toString())
+                Timber.e(it.exception.toString())
             }
         }
-        /*
-        val acct = GoogleSignIn.getLastSignedInAccount(context)
-        getDriveToken(acct!!)
-        */
     }
 
+    /*
     fun getDriveToken(acct: GoogleSignInAccount) {
         val task = ThreadedTask<String>()
         task.addOnSuccess {
@@ -55,22 +75,29 @@ class GoogleDriveService @Inject constructor(
             Log.d("FAILURE", it)
         }
         task.execute(Executor{}, {
-            GoogleAuthUtil.getToken(context, acct.account, "oauth2:https://www.googleapis.com/auth/drive.appdata")
+            val driveScope = Scopes.DRIVE_APPFOLDER
+            GoogleAuthUtil.getToken(context, acct.account, "oauth2:$driveScope")
         })
     }
+     */
 
     fun getTokenKey(): Observable<JsonObject> {
+        val parameterForFileName = parameterForFileName(context.getString(R.string.secret_key_drive_file))
         return googleDriveService
-            .getFiles(getAuthorizationString())
+            .getFiles(getAuthorizationString(), parameterForFileName)
             .flatMap {
-                Log.d("DRIVE", it.toString())
-                val keyFileId = it.files[0].asJsonObject.get("id").asString
-                return@flatMap googleDriveService.getKeyFile(keyFileId, getAuthorizationString())
+                Timber.d(it.toString())
+                if (it.files.isNotEmpty()) {
+                    val keyFileId = it.files[0].asJsonObject.get("id").asString
+                    return@flatMap googleDriveService.getFile(keyFileId, getAuthorizationString())
+                } else {
+                    return@flatMap Observable.just(null)
+                }
             }
     }
 
     fun createKeyFile(token: String): Completable {
-        val file = createFile(token, "key")
+        val file = createFile(token, context.getString(R.string.secret_key_drive_file))
         val jsonMetadata = Gson().toJson(RetrofitMetadataPart(appDataFolderAsParent, file.name))
         val metadataPart = MultipartBody.Part.create(
             RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonMetadata)
