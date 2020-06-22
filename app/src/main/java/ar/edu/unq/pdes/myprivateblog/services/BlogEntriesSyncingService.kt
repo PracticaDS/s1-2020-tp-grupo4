@@ -25,6 +25,7 @@ class BlogEntriesSyncingService @Inject constructor (
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
     fun uploadUnsyncedBlogEntries(secretKey: SecretKey) {
+        /*
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             val userUid = user.uid
@@ -35,13 +36,7 @@ class BlogEntriesSyncingService @Inject constructor (
                             .document("users/$userUid")
                             .collection("blogEntries")
                             .document(it.uid.toString())
-                        val salt = if (it.salt != null) {
-                            it.salt!!
-                        } else {
-                            it.salt = encryptionService.generateSalt()
-                            it.salt!!
-                        }
-                        val blogEntryForUpload = convertForUploading(it, secretKey, salt)
+                        val blogEntryForUpload = convertForUploading(it, secretKey)
                         batch.set(
                             userBlogEntrysRef,
                             blogEntryForUpload,
@@ -51,7 +46,7 @@ class BlogEntriesSyncingService @Inject constructor (
                 }.addOnCompleteListener {
                     if (it.isSuccessful) {
                         list
-                            .map { blogEntry -> blogEntriesService.update(blogEntry.copy(synced = true, salt = blogEntry.salt)) }
+                            .map { blogEntry -> blogEntriesService.update(blogEntry.copy(synced = true)) }
                             .toObservable()
                             .flatMapCompletable { completables -> completables }
                             .subscribe()
@@ -59,9 +54,11 @@ class BlogEntriesSyncingService @Inject constructor (
                 }
             }
         }
+         */
     }
 
     fun fetchAndStoreBlogEntries(secretKey: SecretKey) {
+        /*
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             val userUid = user.uid
@@ -93,9 +90,12 @@ class BlogEntriesSyncingService @Inject constructor (
                     }
                 }
         }
+
+         */
     }
 
-    private fun convertForUploading (blogEntry: BlogEntry, secretKey: SecretKey, salt: ByteArray ): BlogEntryFirestore {
+    private fun convertForUploading (blogEntry: BlogEntry, secretKey: SecretKey, salt: ByteArray ): Unit {
+        /*
         val content = File(context.filesDir, blogEntry.bodyPath!!).readText()
         val encryptedContent = encryptionService.encrypt(secretKey, content, salt)
         val encryptedContentWithSalt = encryptionService.concatWithSalt(salt, encryptedContent)
@@ -110,6 +110,8 @@ class BlogEntriesSyncingService @Inject constructor (
             blogEntry.date,
             blogEntry.cardColor
         )
+
+         */
     }
 }
 

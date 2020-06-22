@@ -8,11 +8,13 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import java.io.InputStream
+import java.io.OutputStream
 import java.security.SecureRandom
-import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
-import javax.crypto.SecretKey
+import java.security.spec.KeySpec
+import javax.crypto.*
 import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
@@ -20,8 +22,8 @@ class EncryptionService @Inject constructor(
     val context: Context
 ) {
     private val charset = Charsets.UTF_8
-    private val SALT_SIZE = 16
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private val transformationAlgorithm = "AES/CBC/PKCS5Padding"
 
     /**
      * Generates a new secret key
@@ -29,7 +31,7 @@ class EncryptionService @Inject constructor(
     fun generateSecretKey(): SecretKey? {
         val secureRandom = SecureRandom()
         val keyGenerator = KeyGenerator.getInstance("AES")
-        keyGenerator?.init(256, secureRandom)
+        keyGenerator?.init(128, secureRandom)
         return keyGenerator?.generateKey()
     }
 
@@ -47,54 +49,43 @@ class EncryptionService @Inject constructor(
     }
 
     /**
-     * Generates a new salt for encrypting data
-     */
-    fun generateSalt(): ByteArray {
-        val secureRandom = SecureRandom.getInstance("SHA1PRNG")
-        val salt = ByteArray(SALT_SIZE)
-        secureRandom.nextBytes(salt)
-        return salt
-    }
-
-    /**
-     * Concats the salt (represented by a ByteArray) and the encryptedData (represented by a
-     * ByteArray).
-     * Returns one ByteArray containing both data.
-     */
-    fun concatWithSalt(salt: ByteArray, encryptedData: ByteArray): ByteArray = salt + encryptedData
-
-    /**
-     * Using the data generated with #concatWithSalt, splits the ByteArray to obtain the salt and
-     * the encrypted data.
-     * Returns a Pair<ByteArray, ByteArray> containing the encrypted data as the first member and
-     * the salt as the second member.
-     */
-    fun getSaltAndEncryptedData(data: ByteArray): Pair<ByteArray, ByteArray> {
-        val salt = data.copyOfRange(0, SALT_SIZE)
-        val encryptedData = data.copyOfRange(SALT_SIZE, data.size)
-        return Pair(encryptedData, salt)
-    }
-
-    /**
      * Encrypts a String with a secret key
      */
-    fun encrypt(yourKey: SecretKey, plainText: String, salt: ByteArray): ByteArray {
-        val plainTextBase64 = plainText.toByteArray(charset)
-        val data = yourKey.encoded
-        val skeySpec = SecretKeySpec(data, 0, data.size, "AES")
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, IvParameterSpec(salt))
-        return cipher.doFinal(plainTextBase64)
+    fun encrypt(secretKey: SecretKey, inputStream: InputStream, outputStream: OutputStream) {
+        val skeySpec = SecretKeySpec(secretKey.encoded, "AES")
+        val cipher = Cipher.getInstance(transformationAlgorithm)
+
+        val salt = ByteArray(cipher.blockSize)
+        SecureRandom().nextBytes(salt)
+
+        val iv = IvParameterSpec(salt)
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv)
+
+        val cOutputStream = CipherOutputStream(outputStream, cipher)
+
+        outputStream.write(salt)
+        inputStream.copyTo(cOutputStream)
     }
 
     /**
      * Decrypts a String with a secret key
      */
-    fun decrypt(yourKey: SecretKey, encryptedData: ByteArray, salt: ByteArray): String {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
-        cipher.init(Cipher.DECRYPT_MODE, yourKey, IvParameterSpec(salt))
-        val decrypted = cipher.doFinal(encryptedData)
-        return decrypted.toString(charset)
+    fun decrypt(secretKey: SecretKey, inputStream: InputStream, outputStream: OutputStream) {
+        val skeySpec = SecretKeySpec(secretKey.encoded, "AES")
+        val cipher = Cipher.getInstance(transformationAlgorithm)
+
+        val salt = ByteArray(cipher.blockSize).apply {
+            val readBytes = inputStream.use {
+                it.read(this, 0, cipher.blockSize)
+            }
+        }
+
+        val iv = IvParameterSpec(salt)
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv)
+
+        val cInputStream = CipherInputStream(inputStream, cipher)
+
+        cInputStream.copyTo(outputStream)
     }
 
     /**
