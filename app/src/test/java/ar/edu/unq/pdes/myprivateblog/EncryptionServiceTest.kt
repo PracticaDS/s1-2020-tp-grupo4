@@ -2,11 +2,16 @@ package ar.edu.unq.pdes.myprivateblog
 
 import android.content.Context
 import ar.edu.unq.pdes.myprivateblog.services.EncryptionService
+import org.apache.tools.ant.filters.StringInputStream
 import org.hamcrest.core.IsInstanceOf.instanceOf
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.nio.charset.Charset
 import javax.crypto.SecretKey
 
 class EncryptionServiceTest {
@@ -35,13 +40,25 @@ class EncryptionServiceTest {
         assertNotEquals(secretKey1, secretKey2)
     }
 
+    @ExperimentalStdlibApi
     @Test
     fun whenEncryptingAValue_itShouldBeTheSameAfterDecrypting() {
-        val someString = "I'm a happy string"
+        val someString = "I'm a happy striI'm a happy stri"//"I'm a happy string"
         val secretKey = encryptionService.generateSecretKey()!!
-        val encryptedString = encryptionService.encrypt(secretKey, someString)
-        val decryptedString = encryptionService.decrypt(secretKey, encryptedString)
 
-        assertEquals(someString, decryptedString)
+        val inputStream = ByteArrayInputStream(someString.encodeToByteArray())
+        val outputStream = ByteArrayOutputStream()
+
+        encryptionService.encrypt(secretKey, inputStream, outputStream)
+        val encrypted = outputStream.toByteArray()
+
+        val inputStreamEncrypted = ByteArrayInputStream(encrypted)
+        val outputStreamEncrypted = ByteArrayOutputStream()
+
+        encryptionService.decrypt(secretKey, inputStreamEncrypted, outputStreamEncrypted)
+
+        val encryptedByteArray = outputStreamEncrypted.toByteArray()
+
+        assertEquals(someString, encryptedByteArray.decodeToString())
     }
 }
