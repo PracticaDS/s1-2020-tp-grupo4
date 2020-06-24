@@ -12,6 +12,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.security.SecureRandom
 import java.security.spec.KeySpec
+import java.util.*
 import javax.crypto.*
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
@@ -21,18 +22,18 @@ import javax.inject.Inject
 class EncryptionService @Inject constructor(
     val context: Context
 ) {
-    private val charset = Charsets.UTF_8
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val transformationAlgorithm = "AES/CBC/PKCS5Padding"
+    private val secretKeyAlgorithm = "AES"
 
     /**
      * Generates a new secret key
      */
     fun generateSecretKey(): SecretKey? {
-        val secureRandom = SecureRandom()
-        val keyGenerator = KeyGenerator.getInstance("AES")
-        keyGenerator?.init(128, secureRandom)
-        return keyGenerator?.generateKey()
+        val keygen = KeyGenerator.getInstance(secretKeyAlgorithm)
+        val secrand = SecureRandom.getInstance("SHA1PRNG")
+        keygen.init(128, secrand)
+        return keygen.generateKey()
     }
 
     /**
@@ -45,43 +46,39 @@ class EncryptionService @Inject constructor(
      */
     private fun decodeSecretKey(key: String): SecretKey {
         val decodedKey = Base64.decode(key, Base64.NO_WRAP)
-        return SecretKeySpec(decodedKey, 0, decodedKey.size, "AES")
+        return SecretKeySpec(decodedKey, 0, decodedKey.size, secretKeyAlgorithm)
     }
 
     /**
      * Encrypts a String with a secret key
      */
     fun encrypt(secretKey: SecretKey, inputStream: InputStream, outputStream: OutputStream) {
-        val skeySpec = SecretKeySpec(secretKey.encoded, "AES")
+        val skeySpec = SecretKeySpec(secretKey.encoded, secretKeyAlgorithm)
         val cipher = Cipher.getInstance(transformationAlgorithm)
 
-        val salt = ByteArray(cipher.blockSize)
-        SecureRandom().nextBytes(salt)
+        val iv = ByteArray(cipher.blockSize)
+        SecureRandom().nextBytes(iv)
 
-        val iv = IvParameterSpec(salt)
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv)
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, IvParameterSpec(iv))
 
         val cOutputStream = CipherOutputStream(outputStream, cipher)
 
-        outputStream.write(salt)
+        outputStream.write(iv)
         inputStream.copyTo(cOutputStream)
+        cOutputStream.close()
     }
 
     /**
      * Decrypts a String with a secret key
      */
     fun decrypt(secretKey: SecretKey, inputStream: InputStream, outputStream: OutputStream) {
-        val skeySpec = SecretKeySpec(secretKey.encoded, "AES")
+        val skeySpec = SecretKeySpec(secretKey.encoded, secretKeyAlgorithm)
         val cipher = Cipher.getInstance(transformationAlgorithm)
 
-        val salt = ByteArray(cipher.blockSize).apply {
-            val readBytes = inputStream.use {
-                it.read(this, 0, cipher.blockSize)
-            }
-        }
+        val iv = ByteArray(cipher.blockSize)
+        inputStream.read(iv)
 
-        val iv = IvParameterSpec(salt)
-        cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv)
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec, IvParameterSpec(iv))
 
         val cInputStream = CipherInputStream(inputStream, cipher)
 

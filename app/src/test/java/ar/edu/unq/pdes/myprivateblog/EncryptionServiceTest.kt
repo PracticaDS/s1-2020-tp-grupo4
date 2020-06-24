@@ -43,17 +43,21 @@ class EncryptionServiceTest {
     @ExperimentalStdlibApi
     @Test
     fun whenEncryptingAValue_itShouldBeTheSameAfterDecrypting() {
-        val someString = "I'm a happy striI'm a happy stri"//"I'm a happy string"
+        val someString = "I'm a happy string"
         val secretKey = encryptionService.generateSecretKey()!!
 
         val inputStream = ByteArrayInputStream(someString.encodeToByteArray())
         val outputStream = ByteArrayOutputStream()
+
+        outputStream.close()
 
         encryptionService.encrypt(secretKey, inputStream, outputStream)
         val encrypted = outputStream.toByteArray()
 
         val inputStreamEncrypted = ByteArrayInputStream(encrypted)
         val outputStreamEncrypted = ByteArrayOutputStream()
+
+        outputStreamEncrypted.close()
 
         encryptionService.decrypt(secretKey, inputStreamEncrypted, outputStreamEncrypted)
 

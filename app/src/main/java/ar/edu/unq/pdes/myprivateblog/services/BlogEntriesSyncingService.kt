@@ -2,18 +2,17 @@ package ar.edu.unq.pdes.myprivateblog.services
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Base64
-import ar.edu.unq.pdes.myprivateblog.BaseViewModel
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
 import ar.edu.unq.pdes.myprivateblog.data.EntityID
-import ar.edu.unq.pdes.myprivateblog.rx.RxSchedulers
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import io.reactivex.rxkotlin.toObservable
 import org.threeten.bp.OffsetDateTime
-import java.io.File
-import java.io.Serializable
+import timber.log.Timber
+import java.io.*
 import javax.crypto.SecretKey
 import javax.inject.Inject
 
@@ -23,25 +22,39 @@ class BlogEntriesSyncingService @Inject constructor (
     val context: Context
 ){
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private val storage by lazy { Firebase.storage }
 
     fun uploadUnsyncedBlogEntries(secretKey: SecretKey) {
-        /*
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             val userUid = user.uid
             blogEntriesService.getAllUnsynced().observeForever { list ->
                 db.runBatch { batch ->
                     list.forEach {
-                        val userBlogEntrysRef = db
+                        // Upload blog entry to firestore
+                        val userBlogEntryRef = db
                             .document("users/$userUid")
                             .collection("blogEntries")
                             .document(it.uid.toString())
-                        val blogEntryForUpload = convertForUploading(it, secretKey)
+                        val encryptedContent = PipedOutputStream()
+                        val encryptedContentInputStream = PipedInputStream()
+                        encryptedContentInputStream.connect(encryptedContent)
+                        val blogEntryForUpload = convertForUploading(it, secretKey, encryptedContent)
+                        encryptedContent.close()
+
                         batch.set(
-                            userBlogEntrysRef,
+                            userBlogEntryRef,
                             blogEntryForUpload,
                             SetOptions.merge()
                         )
+
+                        // Upload blog entry to storage
+                        val userBlogEntryStorageRef = storage
+                            .reference
+                            .child("users/$userUid/blogEntries")
+                            .child(it.uid.toString())
+
+                        userBlogEntryStorageRef.putStream(encryptedContentInputStream)
                     }
                 }.addOnCompleteListener {
                     if (it.isSuccessful) {
@@ -54,11 +67,9 @@ class BlogEntriesSyncingService @Inject constructor (
                 }
             }
         }
-         */
     }
 
     fun fetchAndStoreBlogEntries(secretKey: SecretKey) {
-        /*
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             val userUid = user.uid
@@ -70,54 +81,50 @@ class BlogEntriesSyncingService @Inject constructor (
                     if (task.isSuccessful) {
                         task.result?.forEach { it ->
                             val blogEntry = it.toObject(BlogEntryFirestore::class.java)
-                            val blogEntryBody = if (blogEntry.encryptedBody != null) {
-                                val encryptedBodyWithSalt = Base64.decode(blogEntry.encryptedBody!!, Base64.NO_WRAP)
-                                val encryptedBodyAndSalt = encryptionService.getSaltAndEncryptedData(encryptedBodyWithSalt)
-                                encryptionService.decrypt(
-                                    secretKey,
-                                    encryptedBodyAndSalt.first,
-                                    encryptedBodyAndSalt.second
-                                )
-                            } else blogEntry.body
+                            val blogEntryUid = blogEntry.uid
 
-                            blogEntriesService.create(
-                                blogEntry.title,
-                                blogEntryBody ?: "",
-                                blogEntry.cardColor!!,
-                                blogEntry.uid
-                            )
+                            val blogEntryStorageRef = storage
+                                .reference
+                                .child("users/$userUid/blogEntries")
+                                .child(blogEntryUid.toString())
+
+                            blogEntryStorageRef.getStream { taskSnapshot, inputStream ->
+                                val decryptedContentOutputStream = ByteArrayOutputStream()
+                                encryptionService.decrypt(secretKey, inputStream, decryptedContentOutputStream)
+                                decryptedContentOutputStream.close()
+
+                                val decryptedContent = String(decryptedContentOutputStream.toByteArray(), Charsets.UTF_8)
+                                blogEntriesService.create(
+                                    blogEntry.title,
+                                    decryptedContent,
+                                    blogEntry.cardColor!!,
+                                    blogEntryUid
+                                )
+                            }.addOnFailureListener {
+                                Timber.e("Could not find content file for user $userUid and file id $blogEntryUid")
+                            }
                         }
                     }
                 }
         }
-
-         */
     }
 
-    private fun convertForUploading (blogEntry: BlogEntry, secretKey: SecretKey, salt: ByteArray ): Unit {
-        /*
-        val content = File(context.filesDir, blogEntry.bodyPath!!).readText()
-        val encryptedContent = encryptionService.encrypt(secretKey, content, salt)
-        val encryptedContentWithSalt = encryptionService.concatWithSalt(salt, encryptedContent)
-        // Encoding to String is needed because ByteArray is not serializable
-        val encodedEncryptedContentWithSalt = Base64.encodeToString(encryptedContentWithSalt, Base64.NO_WRAP)
+    private fun convertForUploading (blogEntry: BlogEntry, secretKey: SecretKey, outputStream: OutputStream): BlogEntryFirestore {
+        val contentInputStream = File(context.filesDir, blogEntry.bodyPath!!).inputStream()
+        encryptionService.encrypt(secretKey, contentInputStream, outputStream)
         return BlogEntryFirestore(
             blogEntry.uid,
             blogEntry.title,
-            encodedEncryptedContentWithSalt,
             blogEntry.imagePath,
             blogEntry.deleted,
             blogEntry.date,
             blogEntry.cardColor
         )
-
-         */
     }
 }
 
 private class BlogEntryFirestore(var uid: EntityID? = null,
                                  var title: String = "",
-                                 var encryptedBody: String? = null,
                                  var imagePath: String? = "",
                                  var deleted: Boolean = false,
                                  var date: OffsetDateTime? = null,
