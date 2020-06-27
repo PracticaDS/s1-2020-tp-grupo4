@@ -2,12 +2,14 @@ package ar.edu.unq.pdes.myprivateblog.services
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
 import ar.edu.unq.pdes.myprivateblog.data.EntityID
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import io.reactivex.rxkotlin.toObservable
 import org.threeten.bp.OffsetDateTime
@@ -19,12 +21,13 @@ import javax.inject.Inject
 class BlogEntriesSyncingService @Inject constructor (
     val blogEntriesService: BlogEntriesService,
     private val encryptionService: EncryptionService,
-    val context: Context
+    val context: Context,
+    val db:FirebaseFirestore,
+    val storage: FirebaseStorage
 ){
-    private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-    private val storage by lazy { Firebase.storage }
 
     fun uploadUnsyncedBlogEntries(secretKey: SecretKey) {
+        Log.i("SYNC","entre 1")
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             val userUid = user.uid
@@ -70,6 +73,7 @@ class BlogEntriesSyncingService @Inject constructor (
     }
 
     fun fetchAndStoreBlogEntries(secretKey: SecretKey) {
+        Log.i("SYNC","entre 2")
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             val userUid = user.uid

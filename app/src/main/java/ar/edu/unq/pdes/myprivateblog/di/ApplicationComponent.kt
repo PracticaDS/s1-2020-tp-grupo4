@@ -20,6 +20,10 @@ import ar.edu.unq.pdes.myprivateblog.screens.sign.OauthSignViewModel
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesSyncingService
 import ar.edu.unq.pdes.myprivateblog.services.EncryptionService
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import dagger.*
 import dagger.android.AndroidInjector
 import dagger.android.ContributesAndroidInjector
@@ -66,7 +70,20 @@ open class ApplicationModule {
     @Singleton
     @Provides
     fun provideBlogEntriesSyncingService(blogEntriesService: BlogEntriesService, encryptionService: EncryptionService, context: Context): BlogEntriesSyncingService {
-        return BlogEntriesSyncingService(blogEntriesService, encryptionService, context)
+        val db = FirebaseFirestore.getInstance()
+        //val firestore = Firebase.firestore
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setHost("192.168.1.39:8081")
+            .setSslEnabled(false)
+            .setPersistenceEnabled(false)
+            .build()
+        db.setFirestoreSettings(settings)
+        //firestore.firestoreSettings = firestoreSettings {
+        //    host = "http://192.168.1.39:8081"
+        //    isSslEnabled = false
+        //    isPersistenceEnabled = false
+        //}
+        return BlogEntriesSyncingService(blogEntriesService, encryptionService, context,db,Firebase.storage)
     }
 
     @Singleton
