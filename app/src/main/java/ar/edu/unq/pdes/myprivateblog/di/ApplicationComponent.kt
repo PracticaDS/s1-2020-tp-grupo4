@@ -72,12 +72,13 @@ open class ApplicationModule {
     fun provideBlogEntriesSyncingService(blogEntriesService: BlogEntriesService, encryptionService: EncryptionService, context: Context): BlogEntriesSyncingService {
         val db = FirebaseFirestore.getInstance()
         //val firestore = Firebase.firestore
-        val settings = FirebaseFirestoreSettings.Builder()
-            .setHost("192.168.1.39:8081")
-            .setSslEnabled(false)
-            .setPersistenceEnabled(false)
-            .build()
-        db.setFirestoreSettings(settings)
+        //val settings = FirebaseFirestoreSettings.Builder()
+        //    .setHost("192.168.1.39:8081")
+        //    .setSslEnabled(false)
+        //    .setPersistenceEnabled(false)
+        //    .build()
+        //db.setFirestoreSettings(settings)
+
         //firestore.firestoreSettings = firestoreSettings {
         //    host = "http://192.168.1.39:8081"
         //    isSslEnabled = false
