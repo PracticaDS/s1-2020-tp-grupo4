@@ -15,6 +15,8 @@ abstract class BaseViewModel constructor(
     val context: Context
 ) : ViewModel() {
 
+    protected val SYNCING_FEATURE_ENABLED = false
+
     val state = MutableLiveData(State.EDITING)
     var post = MutableLiveData<BlogEntry?>()
 

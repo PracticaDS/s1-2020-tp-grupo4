@@ -63,6 +63,7 @@ class OauthSignFragment : BaseFragment() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
+                    viewModel.checkAndCreateSecretKey()
                     updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
