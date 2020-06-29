@@ -11,7 +11,6 @@ import ar.edu.unq.pdes.myprivateblog.BaseFragment
 import ar.edu.unq.pdes.myprivateblog.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -25,38 +24,23 @@ class OauthSignFragment : BaseFragment() {
 
     private val viewModel by viewModels<OauthSignViewModel> { viewModelFactory }
 
-    private var RC_SIGN_IN = 0
-    private lateinit var gso : GoogleSignInOptions
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        this.gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.web_client_id))
-            .requestEmail()
-            .build()
-
         sign_in_button.setOnClickListener {
             signIn()
         }
-
     }
 
     private fun signIn() {
-        val mGoogleSignInClient = GoogleSignIn.getClient(getMainActivity(),gso)
+        val mGoogleSignInClient = GoogleSignIn.getClient(getMainActivity(), getMainActivity().gso)
         val signInIntent = mGoogleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
-    }
-
-    private fun signOut(){
-        val mGoogleSignInClient = GoogleSignIn.getClient(getMainActivity(),gso)
-        mGoogleSignInClient.signOut()
+        startActivityForResult(signInIntent, getMainActivity().RC_SIGN_IN)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == getMainActivity().RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 // Google Sign In was successful, authenticate with Firebase
@@ -91,6 +75,9 @@ class OauthSignFragment : BaseFragment() {
 
     fun updateUI(user: FirebaseUser?){
         if(user != null)
+        {
+            getMainActivity().initDataAndShowSliderMenu(user.displayName!!, user.email!!)
             findNavController().navigate(OauthSignFragmentDirections.signInButton())
+        }
     }
 }

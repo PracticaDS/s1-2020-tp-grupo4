@@ -8,4 +8,6 @@
     <string name="close_toolbar">Close</string>
     <string name="app_name_spaces">My Private Blog</string>
     <string name="portalview">PortalView</string>
+    <string name="default_user_name">username</string>
+    <string name="default_user_email">usermail</string>
 </resources>
