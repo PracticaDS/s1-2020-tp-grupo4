@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/main_activity"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
@@ -15,4 +17,20 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/navigation_graph" />
 
-</FrameLayout>
+    <include
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        layout="@layout/app_toolbar"
+        />
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/nav_view"
+        android:background="@color/white"
+        android:fitsSystemWindows="true"
+        app:menu="@menu/drawer_menu"
+        app:headerLayout="@layout/toolbar_header"
+        android:layout_gravity="start"
+        />
+
+</androidx.drawerlayout.widget.DrawerLayout>

@@ -2,18 +2,14 @@ package ar.edu.unq.pdes.myprivateblog.screens.post_create
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import ar.edu.unq.pdes.myprivateblog.*
 import kotlinx.android.synthetic.main.fragment_post_edit.*
-import org.wordpress.aztec.Aztec
-import org.wordpress.aztec.ITextFormat
-import org.wordpress.aztec.glideloader.GlideImageLoader
-import org.wordpress.aztec.glideloader.GlideVideoThumbnailLoader
-import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
-import timber.log.Timber
+
 
 class PostCreateFragment : BaseFragment() {
     override val layoutId = R.layout.fragment_post_edit
@@ -22,7 +18,7 @@ class PostCreateFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         viewModel.state.observe(viewLifecycleOwner, Observer {
             when (it) {
 
