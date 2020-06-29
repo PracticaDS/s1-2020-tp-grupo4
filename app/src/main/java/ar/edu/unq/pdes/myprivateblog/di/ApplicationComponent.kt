@@ -79,8 +79,8 @@ open class ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideGoogleDriveService(context: Context, googleApiService: GoogleApiService): GoogleDriveService {
-        return GoogleDriveService(context, googleApiService)
+    fun provideGoogleDriveService(context: Context, googleApiService: GoogleApiService, encryptionService: EncryptionService): GoogleDriveService {
+        return GoogleDriveService(context, googleApiService, encryptionService)
     }
 
     @Singleton

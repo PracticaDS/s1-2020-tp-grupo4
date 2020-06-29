@@ -1,7 +1,6 @@
 package ar.edu.unq.pdes.myprivateblog.screens.posts_listing
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import ar.edu.unq.pdes.myprivateblog.BaseViewModel
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
@@ -9,10 +8,10 @@ import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesSyncingService
 import ar.edu.unq.pdes.myprivateblog.services.EncryptionService
 import ar.edu.unq.pdes.myprivateblog.services.drive.GoogleDriveService
-import ar.edu.unq.pdes.myprivateblog.services.googleApi.GoogleApiService
 import io.reactivex.Observable
+import io.reactivex.ObservableSource
 import timber.log.Timber
-import java.util.concurrent.Executor
+import java.util.concurrent.Callable
 import javax.inject.Inject
 
 class PostsListingViewModel @Inject constructor(
@@ -41,24 +40,26 @@ class PostsListingViewModel @Inject constructor(
             googleDriveService.getDriveToken()
         } else {
             Thread {
-
                 googleDriveService
                     .getTokenKey()
-                    .map {
-                        if (it == null) {
-                            // Create key and pass it in the next line.
-                            return@map googleDriveService.createKeyFile("password")
-                        } else {
-                            return@map Observable.just(it)
-                        }
-                    }
+                    .map { encryptionService.storeSecretKey(it) }
                     .subscribe({
                         Timber.d("Success")
                     }, {
-                        Timber.e(it)
+                        Timber.e(it.cause)
                     })
             }.start()
         }
     }
+
+    /*
+    private fun generateStoreAndUploadKey(): Observable<String> {
+        val secretKey = encryptionService.generateSecretKey()!!
+        val encodedKey = encryptionService.encodeSecretKey(secretKey)
+        return googleDriveService.createKeyFile(encodedKey)
+            .andThen(Observable.defer { Observable.just(encodedKey) })
+    }
+
+     */
 
 }

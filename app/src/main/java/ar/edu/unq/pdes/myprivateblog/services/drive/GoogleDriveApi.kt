@@ -11,18 +11,19 @@ interface GoogleDriveApi {
     // Spaces must be "appDataFolder"
     @GET("/drive/v3/files")
     fun getFiles(@Header("Authorization") authToken: String,
-                 @Query("q") query: String,
+                 //@Query("q") query: String,
                  @Query("spaces") spaces: String = "appDataFolder",
                  @Query("key") key: String = "AIzaSyDJQytdiTV0F9KcrlRbR-UvjL5KGuWkEAQ"
     ): Observable<GetListResponse>
 
     // Spaces must be "appDataFolder"
     @GET("/drive/v3/files/{fileId}")
-    fun getFile(@Path("fileId") fileId: String,
-                @Header("Authorization") authToken: String,
-                @Query("spaces") spaces: String = "appDataFolder",
-                @Query("key") key: String = "AIzaSyDJQytdiTV0F9KcrlRbR-UvjL5KGuWkEAQ"
-    ): Observable<JsonObject>
+    fun getFileDownloadUrl(@Path("fileId") fileId: String,
+                           @Header("Authorization") authToken: String,
+                           @Query("alt") alt: String = "media",
+                           @Query("spaces") spaces: String = "appDataFolder",
+                           @Query("key") key: String = "AIzaSyDJQytdiTV0F9KcrlRbR-UvjL5KGuWkEAQ"
+    ): Observable<String>
 
     // Spaces must be "appDataFolder"
     @GET("/drive/v3/files/generateIds")
@@ -34,7 +35,6 @@ interface GoogleDriveApi {
 
     // Spaces must be "appDataFolder"
     @Multipart
-    @Headers("Content-Type: text/plain")
     @POST("/upload/drive/v3/files")
     fun createKeyFile(@Part metadata: MultipartBody.Part,
                       @Part fileMedia: MultipartBody.Part,

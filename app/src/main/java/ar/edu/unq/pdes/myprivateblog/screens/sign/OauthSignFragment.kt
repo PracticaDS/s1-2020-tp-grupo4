@@ -25,7 +25,6 @@ class OauthSignFragment : BaseFragment() {
     private val viewModel by viewModels<OauthSignViewModel> { viewModelFactory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         sign_in_button.setOnClickListener {
             signIn()
         }

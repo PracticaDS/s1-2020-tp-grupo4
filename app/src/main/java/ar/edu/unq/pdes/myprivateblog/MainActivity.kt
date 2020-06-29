@@ -49,10 +49,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(general_toolbar)
         supportActionBar?.hide()
 
+        val serverClientId = getString(R.string.web_client_id)
         this.gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.web_client_id))
+            .requestIdToken(serverClientId)
+            .requestServerAuthCode(serverClientId)
             .requestEmail()
-            .requestScopes(Scope(Scopes.DRIVE_APPFOLDER))
+            .requestScopes(Scope(Scopes.DRIVE_FULL), Scope(Scopes.DRIVE_APPFOLDER))
             .build()
 
         val drawerToggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle (
