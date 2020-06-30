@@ -10,6 +10,7 @@ interface GoogleApi {
     @FormUrlEncoded
     @POST("oauth2/v4/token")
     fun getToken(@Field("id_token") idTokenString: String,
+                 @Field("refresh_token") refreshTokenString: String?,
                  @Field("code") deviceCode: String,
                  @Field("client_id") clientId: String,
                  @Field("client_secret") clientSecret: String = "tlYH9Y9kbHevnucVKWLMGG8g",

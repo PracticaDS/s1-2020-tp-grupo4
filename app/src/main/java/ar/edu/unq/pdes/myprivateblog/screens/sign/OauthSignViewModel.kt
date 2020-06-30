@@ -9,27 +9,14 @@ import javax.inject.Inject
 
 class OauthSignViewModel @Inject constructor(
     blogEntriesService: BlogEntriesService,
-    private val encryptionService: EncryptionService,
-    val googleDriveService: GoogleDriveService,
+    private val googleDriveService: GoogleDriveService,
     context: Context
 ): BaseViewModel(blogEntriesService, context) {
 
     fun checkAndCreateSecretKey() {
         if (SYNCING_FEATURE_ENABLED) {
-            val secretKey = encryptionService.retrieveSecretKey()
-            if (secretKey == null) {
-                encryptionService.downloadSecretKey {
-                    if (it == null) {
-                        val newSecretKey = encryptionService.generateSecretKey()!!
-                        encryptionService.uploadSecretKey(newSecretKey)!!
-                            .addOnSuccessListener {
-                                encryptionService.storeSecretKey(newSecretKey)
-                            }
-                    } else {
-                        encryptionService.storeSecretKey(it)
-                    }
-                }
-            }
+            googleDriveService.fetchAndStoreSecretKey()
         }
     }
+
 }

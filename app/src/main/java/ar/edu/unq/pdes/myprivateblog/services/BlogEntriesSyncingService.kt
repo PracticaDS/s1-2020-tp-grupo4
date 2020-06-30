@@ -88,18 +88,20 @@ class BlogEntriesSyncingService @Inject constructor (
                                 .child("users/$userUid/blogEntries")
                                 .child(blogEntryUid.toString())
 
-                            blogEntryStorageRef.getStream { taskSnapshot, inputStream ->
-                                val decryptedContentOutputStream = ByteArrayOutputStream()
-                                encryptionService.decrypt(secretKey, inputStream, decryptedContentOutputStream)
-                                decryptedContentOutputStream.close()
+                            blogEntryStorageRef.stream.addOnSuccessListener { listener ->
+                                if (listener.totalByteCount == listener.bytesTransferred) {
+                                    val inputStream = listener.stream
+                                    val decryptedContentOutputStream = ByteArrayOutputStream()
 
-                                val decryptedContent = String(decryptedContentOutputStream.toByteArray(), Charsets.UTF_8)
-                                blogEntriesService.create(
-                                    blogEntry.title,
-                                    decryptedContent,
-                                    blogEntry.cardColor!!,
-                                    blogEntryUid
-                                )
+                                    encryptionService.decrypt(secretKey, inputStream, decryptedContentOutputStream)
+                                    val decryptedContent = String(decryptedContentOutputStream.toByteArray(), Charsets.UTF_8)
+                                    blogEntriesService.create(
+                                        blogEntry.title,
+                                        decryptedContent,
+                                        blogEntry.cardColor!!,
+                                        blogEntryUid
+                                    )
+                                }
                             }.addOnFailureListener {
                                 Timber.e("Could not find content file for user $userUid and file id $blogEntryUid")
                             }

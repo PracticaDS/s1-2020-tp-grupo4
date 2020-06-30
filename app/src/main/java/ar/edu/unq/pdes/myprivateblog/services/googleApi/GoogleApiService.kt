@@ -13,9 +13,10 @@ class GoogleApiService @Inject constructor(
     private val googleApiService = RetrofitServiceBuilder
         .buildService(GoogleApi::class.java)
 
-    fun getToken(idToken: String, deviceCode: String): Observable<GoogleApiResponses> {
+    fun getToken(idToken: String, refreshToken: String?, deviceCode: String): Observable<GoogleApiResponses> {
         return googleApiService.getToken(
             idToken,
+            refreshToken,
             deviceCode,
             context.getString(R.string.web_client_id)
         )

@@ -11,11 +11,8 @@ import com.google.firebase.firestore.SetOptions
 import java.io.InputStream
 import java.io.OutputStream
 import java.security.SecureRandom
-import java.security.spec.KeySpec
-import java.util.*
 import javax.crypto.*
 import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
@@ -163,4 +160,5 @@ class EncryptionService @Inject constructor(
             }
         }
     }
+
 }

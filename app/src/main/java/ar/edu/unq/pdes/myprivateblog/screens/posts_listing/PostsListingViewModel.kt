@@ -1,17 +1,17 @@
 package ar.edu.unq.pdes.myprivateblog.screens.posts_listing
 
 import android.content.Context
+import android.view.View
 import androidx.lifecycle.LiveData
+import ar.edu.unq.pdes.myprivateblog.BaseFragment
 import ar.edu.unq.pdes.myprivateblog.BaseViewModel
+import ar.edu.unq.pdes.myprivateblog.R
 import ar.edu.unq.pdes.myprivateblog.data.BlogEntry
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesService
 import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesSyncingService
 import ar.edu.unq.pdes.myprivateblog.services.EncryptionService
 import ar.edu.unq.pdes.myprivateblog.services.drive.GoogleDriveService
-import io.reactivex.Observable
-import io.reactivex.ObservableSource
-import timber.log.Timber
-import java.util.concurrent.Callable
+import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
 
 class PostsListingViewModel @Inject constructor(
@@ -26,40 +26,17 @@ class PostsListingViewModel @Inject constructor(
         blogEntriesService.getAll()
     }
 
-    fun sync() {
+    fun sync(fragment: BaseFragment) {
         if (SYNCING_FEATURE_ENABLED) {
             val secretKey = encryptionService.retrieveSecretKey()
             if (secretKey != null) {
                 blogEntriesSyncingService.fetchAndStoreBlogEntries(secretKey)
+            } else {
+                Snackbar.make(fragment.view!!, R.string.could_not_sync_try_again, Snackbar.LENGTH_LONG)
+                    .show();
+                googleDriveService.fetchAndStoreSecretKey()
             }
         }
     }
-
-    fun getDriveToken() {
-        if (googleDriveService.authToken == null) {
-            googleDriveService.getDriveToken()
-        } else {
-            Thread {
-                googleDriveService
-                    .getTokenKey()
-                    .map { encryptionService.storeSecretKey(it) }
-                    .subscribe({
-                        Timber.d("Success")
-                    }, {
-                        Timber.e(it.cause)
-                    })
-            }.start()
-        }
-    }
-
-    /*
-    private fun generateStoreAndUploadKey(): Observable<String> {
-        val secretKey = encryptionService.generateSecretKey()!!
-        val encodedKey = encryptionService.encodeSecretKey(secretKey)
-        return googleDriveService.createKeyFile(encodedKey)
-            .andThen(Observable.defer { Observable.just(encodedKey) })
-    }
-
-     */
 
 }
