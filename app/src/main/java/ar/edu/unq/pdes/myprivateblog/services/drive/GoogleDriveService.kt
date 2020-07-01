@@ -45,19 +45,24 @@ class GoogleDriveService @Inject constructor(
                 val acct = GoogleSignIn.getLastSignedInAccount(context)
                 if (acct?.getServerAuthCode() != null) {
                     val refreshToken = this.retrieveRefreshToken()
-                    googleApiService.getToken(
-                        it.result!!.token!!,
-                        refreshToken,
-                        acct.getServerAuthCode()!!
-                    )
-                        .map { response ->
-                            this.storeAccessToken(response.access_token)
-                            if (response.refresh_token != null) {
-                                this.storeRefreshToken(response.refresh_token)
+                    Thread {
+                        googleApiService.getToken(
+                            it.result!!.token!!,
+                            refreshToken,
+                            acct.getServerAuthCode()!!
+                        )
+                            .map { response ->
+                                this.storeAccessToken(response.access_token)
+                                if (response.refresh_token != null) {
+                                    this.storeRefreshToken(response.refresh_token)
+                                }
+                                response.access_token
                             }
-                            response.access_token
-                        }
-                        .subscribe { accessToken -> if (code != null) code(accessToken) }
+                            .doOnError {
+                                Timber.e(it)
+                            }
+                            .subscribe { accessToken -> if (code != null) code(accessToken) }
+                    }.start()
                 } else {
                     Completable.complete().toObservable<String>()
                 }
@@ -144,17 +149,25 @@ class GoogleDriveService @Inject constructor(
         val secretKey = encryptionService.retrieveSecretKey()
         if (secretKey == null) {
             val accessToken = this.retrieveAccessToken()
-            Thread {
-                if (accessToken == null) {
-                    this.getDriveToken {
+            if (accessToken == null) {
+                this.getDriveToken {
+                    Thread {
                         this.getSecretKey()
+                            .doOnError {
+                                Timber.e(it)
+                            }
                             .subscribe { encodedSecretKey -> encryptionService.storeSecretKey(encodedSecretKey) }
-                    }
-                } else {
-                    this.getSecretKey()
-                        .subscribe { encodedSecretKey -> encryptionService.storeSecretKey(encodedSecretKey) }
+                    }.start()
                 }
-            }.start()
+            } else {
+                Thread {
+                    this.getSecretKey()
+                        .doOnError {
+                            Timber.e(it)
+                        }
+                        .subscribe { encodedSecretKey -> encryptionService.storeSecretKey(encodedSecretKey) }
+                }.start()
+            }
         }
     }
 }

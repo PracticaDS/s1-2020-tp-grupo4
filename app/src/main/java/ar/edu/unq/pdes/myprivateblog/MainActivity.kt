@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .requestIdToken(serverClientId)
             .requestServerAuthCode(serverClientId)
             .requestEmail()
-            .requestScopes(Scope(Scopes.DRIVE_FULL), Scope(Scopes.DRIVE_APPFOLDER))
+            .requestScopes(Scope(Scopes.DRIVE_APPFOLDER))
             .build()
 
         val drawerToggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle (
