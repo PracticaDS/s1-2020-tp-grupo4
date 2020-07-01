@@ -77,7 +77,7 @@ class OauthSignFragment : BaseFragment() {
     fun updateUI(user: FirebaseUser?){
         if(user != null)
         {
-            getMainActivity().initDataAndShowSliderMenu(user.displayName!!, user.email!!)
+            getMainActivity().initDataAndShowSliderMenu(user.displayName!!, user.email!!, user.photoUrl)
             findNavController().navigate(OauthSignFragmentDirections.signInButton())
         }
     }
