@@ -7,14 +7,12 @@ import ar.edu.unq.pdes.myprivateblog.data.EntityID
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import io.reactivex.rxkotlin.toObservable
 import org.threeten.bp.OffsetDateTime
-import timber.log.Timber
 import java.io.*
 import javax.crypto.SecretKey
 import javax.inject.Inject
+import android.util.Base64
 
 class BlogEntriesSyncingService @Inject constructor (
     val blogEntriesService: BlogEntriesService,
@@ -22,7 +20,6 @@ class BlogEntriesSyncingService @Inject constructor (
     val context: Context
 ){
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-    private val storage by lazy { Firebase.storage }
 
     fun uploadUnsyncedBlogEntries(secretKey: SecretKey) {
         val user = FirebaseAuth.getInstance().currentUser
@@ -36,25 +33,18 @@ class BlogEntriesSyncingService @Inject constructor (
                             .document("users/$userUid")
                             .collection("blogEntries")
                             .document(it.uid.toString())
-                        val encryptedContent = PipedOutputStream()
-                        val encryptedContentInputStream = PipedInputStream()
-                        encryptedContentInputStream.connect(encryptedContent)
+
+                        val encryptedContent = ByteArrayOutputStream()
                         val blogEntryForUpload = convertForUploading(it, secretKey, encryptedContent)
                         encryptedContent.close()
+
+                        blogEntryForUpload.body = Base64.encodeToString(encryptedContent.toByteArray(), Base64.NO_WRAP)
 
                         batch.set(
                             userBlogEntryRef,
                             blogEntryForUpload,
                             SetOptions.merge()
                         )
-
-                        // Upload blog entry to storage
-                        val userBlogEntryStorageRef = storage
-                            .reference
-                            .child("users/$userUid/blogEntries")
-                            .child(it.uid.toString())
-
-                        userBlogEntryStorageRef.putStream(encryptedContentInputStream)
                     }
                 }.addOnCompleteListener {
                     if (it.isSuccessful) {
@@ -79,32 +69,26 @@ class BlogEntriesSyncingService @Inject constructor (
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        task.result?.forEach { it ->
-                            val blogEntry = it.toObject(BlogEntryFirestore::class.java)
+                        task.result?.forEach { blogEntryDownloaded ->
+                            val blogEntry = blogEntryDownloaded.toObject(BlogEntryFirestore::class.java)
                             val blogEntryUid = blogEntry.uid
 
-                            val blogEntryStorageRef = storage
-                                .reference
-                                .child("users/$userUid/blogEntries")
-                                .child(blogEntryUid.toString())
+                            var bodyContent = ""
+                            if (blogEntry.body != null) {
+                                val encodedEncryptedBody = Base64.decode(blogEntry.body, Base64.NO_WRAP)
+                                val encryptedStream = ByteArrayInputStream(encodedEncryptedBody)
+                                val decryptedStream = ByteArrayOutputStream()
 
-                            blogEntryStorageRef.stream.addOnSuccessListener { listener ->
-                                if (listener.totalByteCount == listener.bytesTransferred) {
-                                    val inputStream = listener.stream
-                                    val decryptedContentOutputStream = ByteArrayOutputStream()
-
-                                    encryptionService.decrypt(secretKey, inputStream, decryptedContentOutputStream)
-                                    val decryptedContent = String(decryptedContentOutputStream.toByteArray(), Charsets.UTF_8)
-                                    blogEntriesService.create(
-                                        blogEntry.title,
-                                        decryptedContent,
-                                        blogEntry.cardColor!!,
-                                        blogEntryUid
-                                    )
-                                }
-                            }.addOnFailureListener {
-                                Timber.e("Could not find content file for user $userUid and file id $blogEntryUid")
+                                encryptionService.decrypt(secretKey, encryptedStream, decryptedStream)
+                                decryptedStream.close()
+                                bodyContent = String(decryptedStream.toByteArray(), Charsets.UTF_8)
                             }
+                            blogEntriesService.create(
+                                blogEntry.title,
+                                bodyContent,
+                                blogEntry.cardColor!!,
+                                blogEntryUid
+                            )
                         }
                     }
                 }
