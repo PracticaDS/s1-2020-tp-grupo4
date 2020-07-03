@@ -2,10 +2,13 @@ package ar.edu.unq.pdes.myprivateblog
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -13,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import ar.edu.unq.pdes.myprivateblog.services.DownloadImageTask
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.navigation.NavigationView
@@ -20,7 +24,9 @@ import io.reactivex.plugins.RxJavaPlugins
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_toolbar.*
 import timber.log.Timber
+import java.net.URL
 import javax.inject.Inject
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -88,13 +94,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun initDataAndShowSliderMenu(name: String, email: String){
+    fun initDataAndShowSliderMenu(name: String, email: String, photoUri: Uri?){
         supportActionBar?.title = "My Private Blog"
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_drawer)
         findViewById<TextView>(R.id.user_name).text = name
         findViewById<TextView>(R.id.user_mail).text = email
+        if(photoUri != null){
+            DownloadImageTask(findViewById(R.id.profile_photo)).execute(photoUri.toString());
+        }
         supportActionBar?.show()
     }
 

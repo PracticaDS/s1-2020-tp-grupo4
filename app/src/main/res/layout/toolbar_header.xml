@@ -3,23 +3,13 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/header_background"
+    android:background="@drawable/menuslider"
     android:padding="16dp">
-    
-    <ImageView
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:src="@mipmap/ic_launcher_main_round"
-        android:layout_marginTop="10dp"/>
 
-    <TextView
-        android:id="@+id/user_mail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/default_user_email"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:textSize="20dp"/>
+    <ImageView
+        android:id="@+id/profile_photo"
+        android:layout_width="75dp"
+        android:layout_height="75dp" />
 
     <TextView
         android:id="@+id/user_name"
@@ -27,7 +17,15 @@
         android:layout_height="wrap_content"
         android:text="@string/default_user_name"
         android:textColor="@color/white"
-        android:textSize="18dp"/>
+        android:textStyle="bold"
+        android:textSize="20dp"/>
 
+    <TextView
+        android:id="@+id/user_mail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/default_user_email"
+        android:textColor="@color/white"
+        android:textSize="18dp"/>
 
 </LinearLayout>

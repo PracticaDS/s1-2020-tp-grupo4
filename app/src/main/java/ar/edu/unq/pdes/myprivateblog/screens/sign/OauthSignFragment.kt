@@ -28,6 +28,9 @@ class OauthSignFragment : BaseFragment() {
         sign_in_button.setOnClickListener {
             signIn()
         }
+        btn_testing.setOnClickListener{
+            goToListingPosts()
+        }
     }
 
     private fun signIn() {
@@ -77,8 +80,12 @@ class OauthSignFragment : BaseFragment() {
     fun updateUI(user: FirebaseUser?){
         if(user != null)
         {
-            getMainActivity().initDataAndShowSliderMenu(user.displayName!!, user.email!!)
-            findNavController().navigate(OauthSignFragmentDirections.signInButton())
+            getMainActivity().initDataAndShowSliderMenu(user.displayName!!, user.email!!, user.photoUrl)
+            goToListingPosts()
         }
+    }
+
+    fun goToListingPosts(){
+        findNavController().navigate(OauthSignFragmentDirections.signInButton())
     }
 }
