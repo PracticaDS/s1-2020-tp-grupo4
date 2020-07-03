@@ -11,11 +11,8 @@ import com.google.firebase.firestore.SetOptions
 import java.io.InputStream
 import java.io.OutputStream
 import java.security.SecureRandom
-import java.security.spec.KeySpec
-import java.util.*
 import javax.crypto.*
 import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
@@ -39,12 +36,12 @@ class EncryptionService @Inject constructor(
     /**
      * Encodes a secret key with Base64.
      */
-    private fun encodeSecretKey(secretKey: SecretKey): String = Base64.encodeToString(secretKey.encoded, Base64.NO_WRAP)
+    fun encodeSecretKey(secretKey: SecretKey): String = Base64.encodeToString(secretKey.encoded, Base64.NO_WRAP)
 
     /**
      * Decodes a secret key with Base64
      */
-    private fun decodeSecretKey(key: String): SecretKey {
+    fun decodeSecretKey(key: String): SecretKey {
         val decodedKey = Base64.decode(key, Base64.NO_WRAP)
         return SecretKeySpec(decodedKey, 0, decodedKey.size, secretKeyAlgorithm)
     }
@@ -90,6 +87,10 @@ class EncryptionService @Inject constructor(
      */
     fun storeSecretKey(secretKey: SecretKey) {
         val encodedSecretKey = encodeSecretKey(secretKey)
+        storeSecretKey(encodedSecretKey)
+    }
+
+    fun storeSecretKey(encodedSecretKey: String) {
         val sharedPreferences = context.getSharedPreferences(
             context.getString(R.string.preference_file_key),
             Context.MODE_PRIVATE
@@ -159,4 +160,5 @@ class EncryptionService @Inject constructor(
             }
         }
     }
+
 }

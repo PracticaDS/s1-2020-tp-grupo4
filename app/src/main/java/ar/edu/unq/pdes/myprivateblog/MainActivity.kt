@@ -19,6 +19,8 @@ import androidx.navigation.findNavController
 import ar.edu.unq.pdes.myprivateblog.services.DownloadImageTask
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.Scopes
+import com.google.android.gms.common.api.Scope
 import com.google.android.material.navigation.NavigationView
 import io.reactivex.plugins.RxJavaPlugins
 import kotlinx.android.synthetic.main.activity_main.*
@@ -47,9 +49,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(general_toolbar)
         supportActionBar?.hide()
 
+        val serverClientId = getString(R.string.web_client_id)
         this.gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.web_client_id))
+            .requestIdToken(serverClientId)
+            .requestServerAuthCode(serverClientId)
             .requestEmail()
+            .requestScopes(Scope(Scopes.DRIVE_APPFOLDER))
             .build()
 
         val drawerToggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle (

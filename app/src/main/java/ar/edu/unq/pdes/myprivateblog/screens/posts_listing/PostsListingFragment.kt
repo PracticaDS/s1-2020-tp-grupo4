@@ -44,7 +44,7 @@ class PostsListingFragment : BaseFragment() {
             posts_list_recyclerview.layoutManager = LinearLayoutManager(context)
         })
 
-        viewModel.sync()
+        viewModel.sync(this)
     }
 
     fun setView(){
