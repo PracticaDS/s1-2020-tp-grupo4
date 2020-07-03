@@ -19,6 +19,7 @@ class PostsDeleteTest : BaseInjectedTest() {
 
     @Before
     fun setup() {
+        R.id.btn_testing.clickButton()
         R.id.create_new_post.clickButton()
         R.id.title.fillText("An Title")
         R.id.body.fillText("An body Text")

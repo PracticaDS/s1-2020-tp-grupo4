@@ -28,6 +28,9 @@ class OauthSignFragment : BaseFragment() {
         sign_in_button.setOnClickListener {
             signIn()
         }
+        btn_testing.setOnClickListener{
+            goToListingPosts()
+        }
     }
 
     private fun signIn() {
@@ -78,7 +81,11 @@ class OauthSignFragment : BaseFragment() {
         if(user != null)
         {
             getMainActivity().initDataAndShowSliderMenu(user.displayName!!, user.email!!, user.photoUrl)
-            findNavController().navigate(OauthSignFragmentDirections.signInButton())
+            goToListingPosts()
         }
+    }
+
+    fun goToListingPosts(){
+        findNavController().navigate(OauthSignFragmentDirections.signInButton())
     }
 }

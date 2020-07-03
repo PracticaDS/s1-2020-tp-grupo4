@@ -1,8 +1,12 @@
 package ar.edu.unq.pdes.myprivateblog
 
+import androidx.fragment.app.FragmentManager
+import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import ar.edu.unq.pdes.myprivateblog.screens.sign.OauthSignFragment
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -25,6 +29,7 @@ class PostEditTest : BaseInjectedTest() {
 
     @Before
     fun setup() {
+        R.id.btn_testing.clickButton()
         R.id.create_new_post.clickButton()
         R.id.title.fillText(postTitle)
         R.id.body.fillText(bodyText)
