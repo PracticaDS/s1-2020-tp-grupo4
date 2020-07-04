@@ -81,6 +81,7 @@ class OauthSignFragment : BaseFragment() {
         if(user != null)
         {
             getMainActivity().initDataAndShowSliderMenu(user.displayName!!, user.email!!, user.photoUrl)
+            viewModel.uploadPosts(this)
             goToListingPosts()
         }
     }

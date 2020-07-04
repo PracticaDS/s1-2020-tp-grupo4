@@ -5,12 +5,10 @@
 
     <group android:checkableBehavior="single">
 
-<!-- TODO: enlazar sync_button a funcionalidad
         <item
             android:id="@+id/sync_button"
             android:title="Sync"
             android:icon="@drawable/ic_action_sync" />
--->
 
         <item
             android:id="@+id/logout_button"

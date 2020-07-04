@@ -62,7 +62,7 @@ class BlogEntriesService @Inject constructor(
     }
 
     fun changeLogicalDelete(blogEntry: BlogEntry, delete: Boolean) : Completable =
-        blogEntriesRepository.updateBlogEntry(blogEntry.copy( deleted = delete)).observeOn(AndroidSchedulers.mainThread())
+        blogEntriesRepository.updateBlogEntry(blogEntry.copy( deleted = delete, synced = false)).observeOn(AndroidSchedulers.mainThread())
 
     fun logicalDelete(blogEntry: BlogEntry) : Completable = changeLogicalDelete(blogEntry, true)
     fun undoLogicalDelete(blogEntry: BlogEntry) : Completable = changeLogicalDelete(blogEntry, false)

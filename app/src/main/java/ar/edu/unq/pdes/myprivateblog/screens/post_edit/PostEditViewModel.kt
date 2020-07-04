@@ -25,7 +25,7 @@ class PostEditViewModel @Inject constructor(
         val postSecure = post.value!!
         return blogEntriesService.writeBody(postSecure.bodyPath!!, bodyText)
             .flatMapSingle {
-                blogEntriesService.update(postSecure.copy(cardColor = cardColor.value!!)).toSingle { it }
+                blogEntriesService.update(postSecure.copy(cardColor = cardColor.value!!, synced = false)).toSingle { it }
             }
             .compose(RxSchedulers.flowableAsync())
             .subscribe {

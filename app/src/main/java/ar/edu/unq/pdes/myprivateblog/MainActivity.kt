@@ -2,13 +2,11 @@ package ar.edu.unq.pdes.myprivateblog
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -16,21 +14,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import ar.edu.unq.pdes.myprivateblog.di.ApplicationComponent
+import ar.edu.unq.pdes.myprivateblog.di.DaggerApplicationComponent
+import ar.edu.unq.pdes.myprivateblog.services.BlogEntriesSyncingService
 import ar.edu.unq.pdes.myprivateblog.services.DownloadImageTask
+import ar.edu.unq.pdes.myprivateblog.services.EncryptionService
+import ar.edu.unq.pdes.myprivateblog.services.drive.GoogleDriveService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.api.Scope
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.plugins.RxJavaPlugins
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_toolbar.*
 import timber.log.Timber
-import java.net.URL
 import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity @Inject constructor() : DaggerAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -41,7 +45,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         RxJavaPlugins.setErrorHandler { Timber.e(it) }
 
         setContentView(R.layout.activity_main)
@@ -99,6 +103,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    fun sync() {
+        val secretKey = viewModel.encryptionService.retrieveSecretKey()
+        if (secretKey != null) {
+            viewModel.blogEntriesSyncingService.fetchAndStoreBlogEntries(secretKey)
+        } else {
+            Snackbar.make(
+                findViewById(R.id.layout),
+                R.string.could_not_sync_try_again, Snackbar.LENGTH_LONG)
+                .show();
+            viewModel.googleDriveService.fetchAndStoreSecretKey()
+        }
+    }
+
     fun initDataAndShowSliderMenu(name: String, email: String, photoUri: Uri?){
         supportActionBar?.title = "My Private Blog"
         supportActionBar?.setHomeButtonEnabled(true)
@@ -118,10 +135,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 signOut()
             }
 
-            /* TODO: enlazar sync_button a funcionalidad
             R.id.sync_button -> {
+                sync()
             }
-             */
         }
         main_activity.closeDrawer(GravityCompat.START)
         return true
