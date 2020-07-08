@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "901159858673-i1li1vskdj3oq9jn9p6t9mof61tfo332.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ar.edu.unq.pdes.grupo4",
+            "certificate_hash": "32c7d3b67459f5f0018585def23edf66e7ef76c9"
+          }
+        },
+        {
+          "client_id": "901159858673-9cfk9gq4hmif4dal419a94u3nmpku18b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ar.edu.unq.pdes.grupo4",
+            "certificate_hash": "3725953855ba8482d9ec0e342ca6804ed7055352"
+          }
+        },
+        {
           "client_id": "901159858673-gs9o2rmd8c1ja1ej1qahko790taeq995.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
