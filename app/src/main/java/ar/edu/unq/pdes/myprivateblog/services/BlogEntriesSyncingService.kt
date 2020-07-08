@@ -13,6 +13,7 @@ import java.io.*
 import javax.crypto.SecretKey
 import javax.inject.Inject
 import android.util.Base64
+import timber.log.Timber
 
 class BlogEntriesSyncingService @Inject constructor (
     val blogEntriesService: BlogEntriesService,
@@ -89,6 +90,8 @@ class BlogEntriesSyncingService @Inject constructor (
                                 blogEntry.cardColor!!,
                                 blogEntryUid
                             )
+                                .doOnError { error -> Timber.e(error) }
+                                .subscribe()
                         }
                     }
                 }
@@ -115,4 +118,5 @@ private class BlogEntryFirestore(var uid: EntityID? = null,
                                  var deleted: Boolean = false,
                                  var date: OffsetDateTime? = null,
                                  var cardColor: Int? = Color.WHITE,
-                                 var body: String? = null): Serializable
+                                 var body: String? = null,
+                                 var encryptedBody: String? = null): Serializable
