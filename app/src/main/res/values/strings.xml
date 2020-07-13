@@ -17,4 +17,6 @@
     <string name="access_token_key">GOOGLE_ACCESS_TOKEN</string>
     <string name="refresh_token_key">DRIVE_REFRESH_TOKEN</string>
     <string name="could_not_sync_try_again">No se pudo sincronizar datos. Intente más tarde.</string>
+    <string name="could_not_find_secret_key">Buscando llave personal remota...</string>
+    <string name="uploading_posts">Sincronizando posts</string>
 </resources>

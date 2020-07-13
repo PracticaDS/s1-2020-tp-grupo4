@@ -110,7 +110,7 @@ class MainActivity @Inject constructor() : DaggerAppCompatActivity(), Navigation
         } else {
             Snackbar.make(
                 findViewById(R.id.layout),
-                R.string.could_not_sync_try_again, Snackbar.LENGTH_LONG)
+                R.string.could_not_find_secret_key, Snackbar.LENGTH_LONG)
                 .show();
             viewModel.googleDriveService.fetchAndStoreSecretKey()
         }
